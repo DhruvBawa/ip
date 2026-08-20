@@ -22,6 +22,16 @@ class UiTestCase:
     expected_output: str
 
 
+@dataclass(frozen=True)
+class UiTestPlan:
+    """Commands and comparison settings read from the Markdown test plan."""
+
+    build_command: str | None
+    program_command: str
+    output_starts_after: str | None
+    test_cases: list[UiTestCase]
+
+
 class PlanError(ValueError):
     """Indicate that the Markdown test plan is missing required data."""
 
@@ -50,6 +60,16 @@ def parse_command(plan: str, label: str, required: bool) -> str | None:
     return None
 
 
+def parse_optional_text(plan: str, label: str) -> str | None:
+    """Read an optional backtick-delimited text value from the configuration section."""
+
+    pattern = rf"(?m)^{re.escape(label)}:\s*`([^`]+)`\s*$"
+    match = re.search(pattern, plan)
+    if match:
+        return match.group(1)
+    return None
+
+
 def extract_section(case_body: str, heading: str) -> str:
     """Extract text below a level-three heading up to the next heading."""
 
@@ -69,12 +89,13 @@ def extract_fenced_text(section: str, heading: str) -> str:
     return match.group(1)
 
 
-def parse_plan(plan_path: Path) -> tuple[str | None, str, list[UiTestCase]]:
+def parse_plan(plan_path: Path) -> UiTestPlan:
     """Parse commands and test cases from a UI test plan."""
 
     plan = normalize_newlines(plan_path.read_text(encoding="utf-8"))
     program_command = parse_command(plan, "Program command", required=True)
     build_command = parse_command(plan, "Build command", required=False)
+    output_starts_after = parse_optional_text(plan, "Output starts after line")
 
     headings = list(re.finditer(r"(?m)^## Test Case:\s*(.+?)\s*$", plan))
     if not headings:
@@ -101,7 +122,7 @@ def parse_plan(plan_path: Path) -> tuple[str | None, str, list[UiTestCase]]:
         test_cases.append(UiTestCase(name, aim, inputs, expected))
 
     assert program_command is not None
-    return build_command, program_command, test_cases
+    return UiTestPlan(build_command, program_command, output_starts_after, test_cases)
 
 
 def command_tokens(command: str, label: str) -> list[str]:
@@ -128,6 +149,20 @@ def print_block(label: str, content: str, input_block: bool = False) -> None:
             print(f"> {line}")
     else:
         print(content, end="" if content.endswith("\n") else "\n")
+
+
+def output_for_comparison(output: str, starts_after: str | None) -> str:
+    """Trim ignored startup output before comparing, if the plan requests it."""
+
+    if starts_after is None:
+        return output
+
+    output = normalize_newlines(output)
+    marker = starts_after + "\n"
+    marker_position = output.find(marker)
+    if marker_position == -1:
+        return output
+    return output[marker_position + len(marker):]
 
 
 def run_build(command: str, repo: Path) -> bool:
@@ -163,6 +198,7 @@ def run_test_case(
     program_tokens: list[str],
     repo: Path,
     timeout: float,
+    output_starts_after: str | None,
 ) -> bool:
     """Run and report one test case, returning false on its first failure."""
 
@@ -204,7 +240,10 @@ def run_test_case(
     if result.stderr:
         print_block("CONSOLE ERROR OUTPUT", result.stderr)
 
-    output_matches = comparable(result.stdout) == comparable(test_case.expected_output)
+    actual_for_comparison = output_for_comparison(result.stdout, output_starts_after)
+    output_matches = comparable(actual_for_comparison) == comparable(
+        test_case.expected_output
+    )
     exited_cleanly = result.returncode == 0
     if output_matches and exited_cleanly:
         print("RESULT: PASS\n")
@@ -215,7 +254,7 @@ def run_test_case(
     else:
         print("RESULT: FAIL (output did not match)")
     print_block("EXPECTED OUTPUT", test_case.expected_output)
-    print_block("ACTUAL OUTPUT", result.stdout)
+    print_block("ACTUAL OUTPUT", actual_for_comparison)
     return False
 
 
@@ -241,22 +280,29 @@ def main() -> int:
         plan_path = repo / plan_path
 
     try:
-        build_command, program_command, test_cases = parse_plan(plan_path)
-        program_tokens = command_tokens(program_command, "program command")
+        test_plan = parse_plan(plan_path)
+        program_tokens = command_tokens(test_plan.program_command, "program command")
     except (OSError, PlanError) as error:
         print(f"TEST PLAN ERROR: {error}", file=sys.stderr)
         return 2
 
-    if build_command and not run_build(build_command, repo):
+    if test_plan.build_command and not run_build(test_plan.build_command, repo):
         print("Stopped before the first test case because the build failed.")
         return 1
 
-    for number, test_case in enumerate(test_cases, start=1):
-        if not run_test_case(test_case, number, program_tokens, repo, args.timeout):
+    for number, test_case in enumerate(test_plan.test_cases, start=1):
+        if not run_test_case(
+            test_case,
+            number,
+            program_tokens,
+            repo,
+            args.timeout,
+            test_plan.output_starts_after,
+        ):
             print("Stopped after the first failed test case; later cases were not run.")
             return 1
 
-    print(f"All {len(test_cases)} test case(s) passed.")
+    print(f"All {len(test_plan.test_cases)} test case(s) passed.")
     return 0
 
 
