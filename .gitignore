@@ -8,6 +8,9 @@
 /build/
 src/main/resources/docs/
 
+# Maven build files
+/target/
+
 # MacOS custom attributes files created by Finder
 .DS_Store
 *.iml
