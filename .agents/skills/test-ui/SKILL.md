@@ -33,6 +33,7 @@ Use this exact heading structure:
 
 Program command: `java -cp target/classes Larry`
 Build command: `mvn -q compile`
+Output starts after line: `What can I do for you?`
 
 ## Test Case: Add and list a task
 
@@ -63,6 +64,7 @@ The build command is optional. When present, run it once before the test cases. 
 
 - Compare the complete standard output exactly, including spaces and blank lines.
 - Normalize Windows and Unix line endings and ignore only trailing newline characters at the end of the entire output.
+- If `Output starts after line` is configured, ignore earlier startup output through the first matching line before comparing.
 - Treat a timeout or nonzero program exit as a failure.
 - Display standard error separately when the program writes to it.
 - Never rewrite expected output merely to make a failing test pass. Change it only when the user changes the specification or confirms the expected behavior was wrong.

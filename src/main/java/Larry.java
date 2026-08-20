@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -5,7 +6,6 @@ import java.util.Scanner;
  */
 public class Larry {
     private static final String SEPARATOR = "    __________________________________________________________";
-    private static final int MAX_TASKS = 100;
 
     /**
      * Starts Larry and responds to commands until the user enters {@code bye}.
@@ -54,11 +54,10 @@ public class Larry {
                 """;
         System.out.println(banner);
 
-        System.out.println("Hello! I'm Larry.\nWhat can I do for you?");
+        System.out.println("I'm EVIL LARRY.\nWhat do you want to do?");
         System.out.println(SEPARATOR);
 
-        Task[] tasks = new Task[MAX_TASKS];
-        int taskCount = 0;
+        ArrayList<Task> tasks = new ArrayList<>();
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine();
@@ -73,31 +72,37 @@ public class Larry {
             try {
                 if (command.equals("list")) {
                     System.out.println("     Here are the tasks in your list:");
-                    for (int i = 0; i < taskCount; i++) {
-                        System.out.println("     " + (i + 1) + "." + tasks[i]);
+                    for (int i = 0; i < tasks.size(); i++) {
+                        System.out.println("     " + (i + 1) + "." + tasks.get(i));
                     }
                 } else if (isCommand(command, "mark")) {
-                    int taskIndex = parseTaskIndex(command, "mark", taskCount);
-                    tasks[taskIndex].markAsDone();
+                    int taskIndex = parseTaskIndex(command, "mark", tasks.size());
+                    Task task = tasks.get(taskIndex);
+                    task.markAsDone();
                     System.out.println("     Nice! I've marked this task as done:");
-                    System.out.println("       " + tasks[taskIndex]);
+                    System.out.println("       " + task);
                 } else if (isCommand(command, "unmark")) {
-                    int taskIndex = parseTaskIndex(command, "unmark", taskCount);
-                    tasks[taskIndex].markAsNotDone();
+                    int taskIndex = parseTaskIndex(command, "unmark", tasks.size());
+                    Task task = tasks.get(taskIndex);
+                    task.markAsNotDone();
                     System.out.println("     OK, I've marked this task as not done yet:");
-                    System.out.println("       " + tasks[taskIndex]);
+                    System.out.println("       " + task);
+                } else if (isCommand(command, "delete")) {
+                    int taskIndex = parseTaskIndex(command, "delete", tasks.size());
+                    Task removedTask = tasks.remove(taskIndex);
+                    System.out.println("     Noted. I've removed this task:");
+                    System.out.println("       " + removedTask);
+                    String taskWord = tasks.size() == 1 ? "task" : "tasks";
+                    System.out.println("     Now you have " + tasks.size() + " "
+                            + taskWord + " in the list.");
                 } else {
-                    if (taskCount >= MAX_TASKS) {
-                        throw new LarryException();
-                    }
-
                     Task newTask = parseTask(command);
-                    tasks[taskCount] = newTask;
-                    taskCount++;
+                    tasks.add(newTask);
                     System.out.println("     Got it. I've added this task:");
                     System.out.println("       " + newTask);
-                    String taskWord = taskCount == 1 ? "task" : "tasks";
-                    System.out.println("     Now you have " + taskCount + " " + taskWord + " in the list.");
+                    String taskWord = tasks.size() == 1 ? "task" : "tasks";
+                    System.out.println("     Now you have " + tasks.size() + " "
+                            + taskWord + " in the list.");
                 }
             } catch (LarryException e) {
                 System.out.println("     " + e.getMessage());
@@ -184,9 +189,9 @@ public class Larry {
     }
 
     /**
-     * Parses and validates the one-based task number used by mark commands.
+     * Parses and validates a one-based task number supplied to a task command.
      *
-     * @param command full mark or unmark command
+     * @param command full mark, unmark, or delete command
      * @param keyword command keyword
      * @param taskCount number of tasks currently stored
      * @return validated zero-based task index
