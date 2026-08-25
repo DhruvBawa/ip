@@ -6,6 +6,8 @@ import java.util.Scanner;
  */
 public class Larry {
   private static final String SEPARATOR = "    __________________________________________________________";
+  private static final String initSpace = "     ";
+  private static final String preTaskSpace = "       ";
 
   /**
    * Starts Larry and responds to commands until the user enters {@code bye}.
@@ -64,14 +66,14 @@ public class Larry {
       System.out.println(SEPARATOR);
 
       if (command.equals("bye")) {
-        System.out.println("     EVIL LARRY has decided to let you go\n     FOR NOW...");
+        System.out.println(initSpace + "EVIL LARRY has decided to let you go\n     FOR NOW...");
         System.out.println(SEPARATOR);
         break;
       }
 
       try {
         if (command.equals("list")) {
-          System.out.println("     Here are the tasks in your list:");
+          System.out.println(initSpace + "Here are the tasks EVIL LARRY says are in your list:");
           for (int i = 0; i < tasks.size(); i++) {
             System.out.println("     " + (i + 1) + "." + tasks.get(i));
           }
@@ -79,33 +81,33 @@ public class Larry {
           int taskIndex = parseTaskIndex(command, "mark", tasks.size());
           Task task = tasks.get(taskIndex);
           task.markAsDone();
-          System.out.println("     Nice! I've marked this task as done:");
-          System.out.println("       " + task);
+          System.out.println(initSpace + "EVIL LARRY has marked this task as done:");
+          System.out.println(preTaskSpace + task);
         } else if (isCommand(command, "unmark")) {
           int taskIndex = parseTaskIndex(command, "unmark", tasks.size());
           Task task = tasks.get(taskIndex);
           task.markAsNotDone();
-          System.out.println("     OK, I've marked this task as not done yet:");
-          System.out.println("       " + task);
+          System.out.println(initSpace + "EVIL LARRY has marked this task as not done yet:");
+          System.out.println(preTaskSpace + task);
         } else if (isCommand(command, "delete")) {
           int taskIndex = parseTaskIndex(command, "delete", tasks.size());
           Task removedTask = tasks.remove(taskIndex);
-          System.out.println("     Noted. I've removed this task:");
-          System.out.println("       " + removedTask);
+          System.out.println(initSpace + "EVIL LARRY removed this task:");
+          System.out.println(preTaskSpace + removedTask);
           String taskWord = tasks.size() == 1 ? "task" : "tasks";
-          System.out.println("     Now you have " + tasks.size() + " "
+          System.out.println(initSpace + "EVIL LARRY says you have " + tasks.size() + " "
               + taskWord + " in the list.");
         } else {
           Task newTask = parseTask(command);
           tasks.add(newTask);
-          System.out.println("     Got it. I've added this task:");
-          System.out.println("       " + newTask);
+          System.out.println(initSpace + "EVIL LARRY has added this task for you:");
+          System.out.println(preTaskSpace + newTask);
           String taskWord = tasks.size() == 1 ? "task" : "tasks";
-          System.out.println("     Now you have " + tasks.size() + " "
+          System.out.println(initSpace + "EVIL LARRY says you have " + tasks.size() + " "
               + taskWord + " in the list.");
         }
       } catch (LarryException e) {
-        System.out.println("     " + e.getMessage());
+        System.out.println(initSpace + e.getMessage());
       }
 
       System.out.println(SEPARATOR);
