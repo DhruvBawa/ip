@@ -239,11 +239,12 @@ public class Storage {
         String status = task.isDone ? "1" : "0";
         if (task instanceof Deadline deadline) {
             return "D | " + status + " | " + escape(task.description) + " | "
-                    + escape(deadline.dueDate);
+                    + escape(deadline.getDueDateTime().toStorageString());
         }
         if (task instanceof Event event) {
             return "E | " + status + " | " + escape(task.description) + " | "
-                    + escape(event.startTime) + " | " + escape(event.endTime);
+                    + escape(event.getStartDateTime().toStorageString()) + " | "
+                    + escape(event.getEndDateTime().toStorageString());
         }
         return "T | " + status + " | " + escape(task.description);
     }
