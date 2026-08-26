@@ -11,8 +11,8 @@ public class Event extends Task {
      * Creates an event task from start and end date-time text.
      *
      * @param description Description of the event.
-     * @param startTimeText Start in {@code yyyy-MM-dd HHmm} format.
-     * @param endTimeText End in {@code yyyy-MM-dd HHmm} format.
+     * @param startTimeText Start date and time text accepted by Larry.
+     * @param endTimeText End date and time text accepted by Larry.
      */
     public Event(String description, String startTimeText, String endTimeText) {
         super(description);
