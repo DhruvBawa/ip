@@ -7,10 +7,10 @@ public class Deadline extends Task {
     private final TaskDateTime dueDateTime;
 
     /**
-     * Creates a deadline task with unparsed date and time text.
+     * Creates a deadline task from date and time text.
      *
      * @param description Description of the task.
-     * @param dueDateText Date or time by which the task should be completed.
+     * @param dueDateText Date and time in {@code yyyy-MM-dd HHmm} format.
      */
     public Deadline(String description, String dueDateText) {
         super(description);
@@ -26,6 +26,17 @@ public class Deadline extends Task {
     public Deadline(String description, LocalDateTime dueDateTime) {
         super(description);
         this.dueDateTime = new TaskDateTime(dueDateTime);
+    }
+
+    /**
+     * Creates a deadline task with an already parsed task date and time.
+     *
+     * @param description Description of the task.
+     * @param dueDateTime Date and time by which the task should be completed.
+     */
+    public Deadline(String description, TaskDateTime dueDateTime) {
+        super(description);
+        this.dueDateTime = dueDateTime;
     }
 
     /**

@@ -8,11 +8,11 @@ public class Event extends Task {
     private final TaskDateTime endDateTime;
 
     /**
-     * Creates an event task with unparsed start and end text.
+     * Creates an event task from start and end date-time text.
      *
      * @param description Description of the event.
-     * @param startTimeText Start of the event.
-     * @param endTimeText End of the event.
+     * @param startTimeText Start in {@code yyyy-MM-dd HHmm} format.
+     * @param endTimeText End in {@code yyyy-MM-dd HHmm} format.
      */
     public Event(String description, String startTimeText, String endTimeText) {
         super(description);
@@ -31,6 +31,19 @@ public class Event extends Task {
         super(description);
         this.startDateTime = new TaskDateTime(startDateTime);
         this.endDateTime = new TaskDateTime(endDateTime);
+    }
+
+    /**
+     * Creates an event task with already parsed task date and time values.
+     *
+     * @param description Description of the event.
+     * @param startDateTime Start date and time of the event.
+     * @param endDateTime End date and time of the event.
+     */
+    public Event(String description, TaskDateTime startDateTime, TaskDateTime endDateTime) {
+        super(description);
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
     }
 
     /**

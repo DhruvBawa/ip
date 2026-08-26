@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -192,7 +193,11 @@ public class Larry {
             if (description.isEmpty() || dueDate.isEmpty()) {
                 throw new LarryException();
             }
-            return new Deadline(description, dueDate);
+            try {
+                return new Deadline(description, dueDate);
+            } catch (DateTimeParseException e) {
+                throw new LarryException();
+            }
         }
 
         if (isCommand(command, "event")) {
@@ -210,7 +215,11 @@ public class Larry {
             if (description.isEmpty() || startTime.isEmpty() || endTime.isEmpty()) {
                 throw new LarryException();
             }
-            return new Event(description, startTime, endTime);
+            try {
+                return new Event(description, startTime, endTime);
+            } catch (DateTimeParseException e) {
+                throw new LarryException();
+            }
         }
 
         throw new LarryException();

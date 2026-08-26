@@ -150,8 +150,11 @@ public class Storage {
 
         Task task = switch (taskType) {
             case "T" -> new Todo(fields.get(2));
-            case "D" -> new Deadline(fields.get(2), fields.get(3));
-            case "E" -> new Event(fields.get(2), fields.get(3), fields.get(4));
+            case "D" -> new Deadline(fields.get(2),
+                    TaskDateTime.fromStorageString(fields.get(3)));
+            case "E" -> new Event(fields.get(2),
+                    TaskDateTime.fromStorageString(fields.get(3)),
+                    TaskDateTime.fromStorageString(fields.get(4)));
             default -> throw new AssertionError("Task type was already validated");
         };
         if (status.equals("1")) {
