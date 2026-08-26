@@ -1,14 +1,23 @@
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 
 /**
- * Saves Larry's task list to a file on disk.
+ * Loads and saves Larry's task list on disk.
  */
 public class Storage {
     private final Path filePath;
+
+    /** Prevents a failed load from being overwritten by an empty task list. */
+    private boolean isSaveBlocked;
 
     /**
      * Creates storage that reads from and writes to the given file path.
@@ -17,24 +26,50 @@ public class Storage {
      */
     public Storage(Path filePath) {
         this.filePath = filePath;
+        this.isSaveBlocked = false;
     }
 
     /**
-     * Loads tasks from the data file, or returns an empty list if it does not exist.
+     * Loads valid tasks from the data file, or returns an empty list if it does not exist.
+     * Malformed records are skipped and reported to the error stream.
      *
      * @return Tasks stored in the data file.
      * @throws IOException If the data file cannot be read.
      */
     public ArrayList<Task> loadTasks() throws IOException {
         ArrayList<Task> tasks = new ArrayList<>();
-        if (!Files.exists(filePath)) {
-            return tasks;
-        }
+        try {
+            if (!Files.exists(filePath)) {
+                isSaveBlocked = false;
+                return tasks;
+            }
 
-        for (String line : Files.readAllLines(filePath, StandardCharsets.UTF_8)) {
-            tasks.add(deserialize(line));
+            try (BufferedReader reader = openReader()) {
+                String line;
+                int lineNumber = 0;
+                while ((line = reader.readLine()) != null) {
+                    lineNumber++;
+                    if (lineNumber == 1 && line.startsWith("\uFEFF")) {
+                        line = line.substring(1);
+                    }
+                    if (line.isBlank()) {
+                        continue;
+                    }
+
+                    try {
+                        tasks.add(deserialize(line));
+                    } catch (IllegalArgumentException e) {
+                        System.err.println("WARNING: Skipping invalid task data at line "
+                                + lineNumber + ": " + e.getMessage());
+                    }
+                }
+            }
+            isSaveBlocked = false;
+            return tasks;
+        } catch (IOException | SecurityException e) {
+            isSaveBlocked = true;
+            throw e;
         }
-        return tasks;
     }
 
     /**
@@ -44,16 +79,39 @@ public class Storage {
      * @throws IOException If the directory or data file cannot be written.
      */
     public void saveTasks(ArrayList<Task> tasks) throws IOException {
-        Path parentDirectory = filePath.getParent();
-        if (parentDirectory != null) {
-            Files.createDirectories(parentDirectory);
+        if (isSaveBlocked) {
+            throw new IOException("Saving is disabled because the task file could not be loaded.");
         }
+
+        Path absoluteFilePath = filePath.toAbsolutePath();
+        Path parentDirectory = absoluteFilePath.getParent();
+        Files.createDirectories(parentDirectory);
 
         ArrayList<String> taskLines = new ArrayList<>();
         for (Task task : tasks) {
             taskLines.add(serialize(task));
         }
-        Files.write(filePath, taskLines, StandardCharsets.UTF_8);
+
+        Path temporaryFile = Files.createTempFile(parentDirectory, "tasks-", ".tmp");
+        try {
+            Files.write(temporaryFile, taskLines, StandardCharsets.UTF_8);
+            moveIntoPlace(temporaryFile, absoluteFilePath);
+        } finally {
+            Files.deleteIfExists(temporaryFile);
+        }
+    }
+
+    /**
+     * Opens the data file with strict UTF-8 validation.
+     *
+     * @return Reader for the task data file.
+     * @throws IOException If the file cannot be opened.
+     */
+    private BufferedReader openReader() throws IOException {
+        CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder()
+                .onMalformedInput(CodingErrorAction.REPORT)
+                .onUnmappableCharacter(CodingErrorAction.REPORT);
+        return new BufferedReader(new InputStreamReader(Files.newInputStream(filePath), decoder));
     }
 
     /**
@@ -61,19 +119,114 @@ public class Storage {
      *
      * @param line Serialized task data.
      * @return Task represented by the data-file line.
+     * @throws IllegalArgumentException If the line contains invalid task data.
      */
     private Task deserialize(String line) {
-        String[] parts = line.split(" \\| ");
-        Task task = switch (parts[0]) {
-            case "T" -> new Todo(parts[2]);
-            case "D" -> new Deadline(parts[2], parts[3]);
-            case "E" -> new Event(parts[2], parts[3], parts[4]);
-            default -> throw new IllegalArgumentException("Unknown task type: " + parts[0]);
+        ArrayList<String> fields = parseFields(line);
+        if (fields.size() < 2) {
+            throw new IllegalArgumentException("missing task type or status");
+        }
+
+        String taskType = fields.get(0);
+        int expectedFieldCount = switch (taskType) {
+            case "T" -> 3;
+            case "D" -> 4;
+            case "E" -> 5;
+            default -> throw new IllegalArgumentException("unknown task type '" + taskType + "'");
         };
-        if (parts[1].equals("1")) {
+        if (fields.size() != expectedFieldCount) {
+            throw new IllegalArgumentException("wrong number of fields for task type " + taskType);
+        }
+
+        String status = fields.get(1);
+        if (!status.equals("0") && !status.equals("1")) {
+            throw new IllegalArgumentException("status must be 0 or 1");
+        }
+        for (int i = 2; i < fields.size(); i++) {
+            if (fields.get(i).isBlank()) {
+                throw new IllegalArgumentException("task details cannot be blank");
+            }
+        }
+
+        Task task = switch (taskType) {
+            case "T" -> new Todo(fields.get(2));
+            case "D" -> new Deadline(fields.get(2), fields.get(3));
+            case "E" -> new Event(fields.get(2), fields.get(3), fields.get(4));
+            default -> throw new AssertionError("Task type was already validated");
+        };
+        if (status.equals("1")) {
             task.markAsDone();
         }
         return task;
+    }
+
+    /**
+     * Splits a serialized record while unescaping backslashes and pipe characters.
+     *
+     * @param line Serialized task data.
+     * @return Unescaped fields from the record.
+     */
+    private ArrayList<String> parseFields(String line) {
+        ArrayList<String> fields = new ArrayList<>();
+        StringBuilder field = new StringBuilder();
+        boolean isEscaped = false;
+
+        for (int i = 0; i < line.length(); i++) {
+            char character = line.charAt(i);
+            if (isEscaped) {
+                if (character != '\\' && character != '|') {
+                    field.append('\\');
+                }
+                field.append(character);
+                isEscaped = false;
+            } else if (character == '\\') {
+                isEscaped = true;
+            } else if (isFieldSeparator(line, i)) {
+                field.setLength(field.length() - 1);
+                fields.add(field.toString());
+                field.setLength(0);
+                i++;
+            } else {
+                field.append(character);
+            }
+        }
+
+        if (isEscaped) {
+            field.append('\\');
+        }
+        fields.add(field.toString());
+        return fields;
+    }
+
+    /**
+     * Checks whether a pipe character is the separator between two stored fields.
+     *
+     * @param line Serialized task data.
+     * @param position Position of the character to check.
+     * @return True when the character begins a field separator.
+     */
+    private boolean isFieldSeparator(String line, int position) {
+        return line.charAt(position) == '|'
+                && position > 0
+                && position + 1 < line.length()
+                && line.charAt(position - 1) == ' '
+                && line.charAt(position + 1) == ' ';
+    }
+
+    /**
+     * Moves a completed temporary data file over the previous data file.
+     *
+     * @param temporaryFile Completed temporary data file.
+     * @param destination Destination of the task data.
+     * @throws IOException If neither an atomic nor a regular replacement succeeds.
+     */
+    private void moveIntoPlace(Path temporaryFile, Path destination) throws IOException {
+        try {
+            Files.move(temporaryFile, destination, StandardCopyOption.ATOMIC_MOVE,
+                    StandardCopyOption.REPLACE_EXISTING);
+        } catch (AtomicMoveNotSupportedException e) {
+            Files.move(temporaryFile, destination, StandardCopyOption.REPLACE_EXISTING);
+        }
     }
 
     /**
@@ -85,12 +238,23 @@ public class Storage {
     private String serialize(Task task) {
         String status = task.isDone ? "1" : "0";
         if (task instanceof Deadline deadline) {
-            return "D | " + status + " | " + task.description + " | " + deadline.dueDate;
+            return "D | " + status + " | " + escape(task.description) + " | "
+                    + escape(deadline.dueDate);
         }
         if (task instanceof Event event) {
-            return "E | " + status + " | " + task.description + " | " + event.startTime
-                    + " | " + event.endTime;
+            return "E | " + status + " | " + escape(task.description) + " | "
+                    + escape(event.startTime) + " | " + escape(event.endTime);
         }
-        return "T | " + status + " | " + task.description;
+        return "T | " + status + " | " + escape(task.description);
+    }
+
+    /**
+     * Escapes characters that have structural meaning in the data format.
+     *
+     * @param value Field value to escape.
+     * @return Escaped value safe to store in one record.
+     */
+    private String escape(String value) {
+        return value.replace("\\", "\\\\").replace("|", "\\|");
     }
 }

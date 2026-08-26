@@ -61,14 +61,14 @@ What do you want to do?
 
 ### Aim
 
-Exercise add, mark, and delete operations that save the current todo, deadline, and event data to `data/larry.txt` while preserving the console UI.
+Exercise add, mark, and delete operations that save every task type, including field-separator and backslash characters, while preserving the console UI.
 
 ### Inputs
 
 ```text
-todo read book
-deadline return book /by June 6th
-event project meeting /from Aug 6th 2pm /to 4pm
+todo read | book \ notes
+deadline return | book /by June | 6th
+event project | meeting /from Aug \ 6th 2pm /to 4 | pm
 todo temporary task
 mark 1
 delete 4
@@ -85,17 +85,17 @@ What do you want to do?
     __________________________________________________________
     __________________________________________________________
      EVIL LARRY has added this task for you:
-       [T][ ] read book
+       [T][ ] read | book \ notes
      EVIL LARRY says you have 1 task in the list.
     __________________________________________________________
     __________________________________________________________
      EVIL LARRY has added this task for you:
-       [D][ ] return book (by: June 6th)
+       [D][ ] return | book (by: June | 6th)
      EVIL LARRY says you have 2 tasks in the list.
     __________________________________________________________
     __________________________________________________________
      EVIL LARRY has added this task for you:
-       [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+       [E][ ] project | meeting (from: Aug \ 6th 2pm to: 4 | pm)
      EVIL LARRY says you have 3 tasks in the list.
     __________________________________________________________
     __________________________________________________________
@@ -105,7 +105,7 @@ What do you want to do?
     __________________________________________________________
     __________________________________________________________
      EVIL LARRY has marked this task as done:
-       [T][X] read book
+       [T][X] read | book \ notes
     __________________________________________________________
     __________________________________________________________
      EVIL LARRY removed this task:
