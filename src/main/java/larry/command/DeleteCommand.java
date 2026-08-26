@@ -1,3 +1,11 @@
+package larry.command;
+
+import larry.exception.LarryException;
+import larry.storage.Storage;
+import larry.task.Task;
+import larry.task.TaskList;
+import larry.ui.Ui;
+
 /**
  * Deletes a specified task from the task list.
  */

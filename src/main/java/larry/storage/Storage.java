@@ -1,3 +1,5 @@
+package larry.storage;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,6 +12,13 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+
+import larry.task.Deadline;
+import larry.task.Event;
+import larry.task.Task;
+import larry.task.TaskDateTime;
+import larry.task.TaskList;
+import larry.task.Todo;
 
 /**
  * Loads and saves Larry's task list on disk.
@@ -252,17 +261,17 @@ public class Storage {
      * @return One line containing the task type, status, and details.
      */
     private String serialize(Task task) {
-        String status = task.isDone ? "1" : "0";
+        String status = task.isDone() ? "1" : "0";
         if (task instanceof Deadline deadline) {
-            return "D | " + status + " | " + escape(task.description) + " | "
+            return "D | " + status + " | " + escape(task.getDescription()) + " | "
                     + escape(deadline.getDueDateTime().toStorageString());
         }
         if (task instanceof Event event) {
-            return "E | " + status + " | " + escape(task.description) + " | "
+            return "E | " + status + " | " + escape(task.getDescription()) + " | "
                     + escape(event.getStartDateTime().toStorageString()) + " | "
                     + escape(event.getEndDateTime().toStorageString());
         }
-        return "T | " + status + " | " + escape(task.description);
+        return "T | " + status + " | " + escape(task.getDescription());
     }
 
     /**

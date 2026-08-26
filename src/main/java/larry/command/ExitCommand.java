@@ -1,3 +1,9 @@
+package larry.command;
+
+import larry.storage.Storage;
+import larry.task.TaskList;
+import larry.ui.Ui;
+
 /**
  * Displays Larry's farewell message and signals that the application should terminate.
  */
