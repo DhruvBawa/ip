@@ -2,7 +2,7 @@
 
 ## Configuration
 
-Program command: `java -cp target/classes Larry`
+Program command: `bash test/run-ui-test.sh`
 Build command: `mvn -q compile`
 Output starts after line: `             ██████████████████████████████████████`
 

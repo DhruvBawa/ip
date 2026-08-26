@@ -8,15 +8,15 @@ import java.util.Scanner;
  */
 public class Larry {
     private static final String SEPARATOR = "    __________________________________________________________";
-    private static final String initSpace = "     ";
-    private static final String preTaskSpace = "       ";
+    private static final String INIT_SPACE = "     ";
+    private static final String PRE_TASK_SPACE = "       ";
     private static final Path DATA_FILE_PATH = Path.of("data", "larry.txt");
 
     /**
      * Starts Larry and responds to commands until the user enters {@code bye}.
      *
-     * @param args command-line arguments; not used
-     * @throws IOException if Larry cannot save the task list
+     * @param args Command-line arguments; not used.
+     * @throws IOException If Larry cannot load or save the task list.
      */
     public static void main(String[] args) throws IOException {
         System.out.println(SEPARATOR + "\n");
@@ -63,22 +63,23 @@ public class Larry {
         System.out.println("I'm EVIL LARRY.\nWhat do you want to do?");
         System.out.println(SEPARATOR);
 
-        ArrayList<Task> tasks = new ArrayList<>();
         Storage storage = new Storage(DATA_FILE_PATH);
+        ArrayList<Task> tasks = storage.loadTasks();
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine();
             System.out.println(SEPARATOR);
 
             if (command.equals("bye")) {
-                System.out.println(initSpace + "EVIL LARRY has decided to let you go\n     FOR NOW...");
+                System.out.println(INIT_SPACE + "EVIL LARRY has decided to let you go\n     FOR NOW...");
                 System.out.println(SEPARATOR);
                 break;
             }
 
             try {
                 if (command.equals("list")) {
-                    System.out.println(initSpace + "Here are the tasks EVIL LARRY says are in your list:");
+                    System.out.println(INIT_SPACE
+                            + "Here are the tasks EVIL LARRY says are in your list:");
                     for (int i = 0; i < tasks.size(); i++) {
                         System.out.println("     " + (i + 1) + "." + tasks.get(i));
                     }
@@ -87,36 +88,37 @@ public class Larry {
                     Task task = tasks.get(taskIndex);
                     task.markAsDone();
                     storage.saveTasks(tasks);
-                    System.out.println(initSpace + "EVIL LARRY has marked this task as done:");
-                    System.out.println(preTaskSpace + task);
+                    System.out.println(INIT_SPACE + "EVIL LARRY has marked this task as done:");
+                    System.out.println(PRE_TASK_SPACE + task);
                 } else if (isCommand(command, "unmark")) {
                     int taskIndex = parseTaskIndex(command, "unmark", tasks.size());
                     Task task = tasks.get(taskIndex);
                     task.markAsNotDone();
                     storage.saveTasks(tasks);
-                    System.out.println(initSpace + "EVIL LARRY has marked this task as not done yet:");
-                    System.out.println(preTaskSpace + task);
+                    System.out.println(INIT_SPACE
+                            + "EVIL LARRY has marked this task as not done yet:");
+                    System.out.println(PRE_TASK_SPACE + task);
                 } else if (isCommand(command, "delete")) {
                     int taskIndex = parseTaskIndex(command, "delete", tasks.size());
                     Task removedTask = tasks.remove(taskIndex);
                     storage.saveTasks(tasks);
-                    System.out.println(initSpace + "EVIL LARRY removed this task:");
-                    System.out.println(preTaskSpace + removedTask);
+                    System.out.println(INIT_SPACE + "EVIL LARRY removed this task:");
+                    System.out.println(PRE_TASK_SPACE + removedTask);
                     String taskWord = tasks.size() == 1 ? "task" : "tasks";
-                    System.out.println(initSpace + "EVIL LARRY says you have " + tasks.size() + " "
+                    System.out.println(INIT_SPACE + "EVIL LARRY says you have " + tasks.size() + " "
                             + taskWord + " in the list.");
                 } else {
                     Task newTask = parseTask(command);
                     tasks.add(newTask);
                     storage.saveTasks(tasks);
-                    System.out.println(initSpace + "EVIL LARRY has added this task for you:");
-                    System.out.println(preTaskSpace + newTask);
+                    System.out.println(INIT_SPACE + "EVIL LARRY has added this task for you:");
+                    System.out.println(PRE_TASK_SPACE + newTask);
                     String taskWord = tasks.size() == 1 ? "task" : "tasks";
-                    System.out.println(initSpace + "EVIL LARRY says you have " + tasks.size() + " "
+                    System.out.println(INIT_SPACE + "EVIL LARRY says you have " + tasks.size() + " "
                             + taskWord + " in the list.");
                 }
             } catch (LarryException e) {
-                System.out.println(initSpace + e.getMessage());
+                System.out.println(INIT_SPACE + e.getMessage());
             }
 
             System.out.println(SEPARATOR);
@@ -128,9 +130,9 @@ public class Larry {
      * Checks whether an input is a command keyword, optionally followed by
      * arguments.
      *
-     * @param input   full user input
-     * @param keyword command keyword to match
-     * @return true when the input invokes the specified command
+     * @param input Full user input.
+     * @param keyword Command keyword to match.
+     * @return True when the input invokes the specified command.
      */
     private static boolean isCommand(String input, String keyword) {
         return input.equals(keyword) || input.startsWith(keyword + " ");
@@ -139,9 +141,9 @@ public class Larry {
     /**
      * Converts a task-creation command into the appropriate task subtype.
      *
-     * @param command full task-creation command
-     * @return task represented by the command
-     * @throws LarryException if the command or any required field is invalid
+     * @param command Full task-creation command.
+     * @return Task represented by the command.
+     * @throws LarryException If the command or any required field is invalid.
      */
     private static Task parseTask(String command) throws LarryException {
         if (isCommand(command, "todo")) {
@@ -187,10 +189,10 @@ public class Larry {
     /**
      * Extracts a required command argument and rejects blank values.
      *
-     * @param command full user command
-     * @param keyword command keyword preceding the argument
-     * @return trimmed argument text
-     * @throws LarryException if the argument is empty
+     * @param command Full user command.
+     * @param keyword Command keyword preceding the argument.
+     * @return Trimmed argument text.
+     * @throws LarryException If the argument is empty.
      */
     private static String requireArgument(String command, String keyword) throws LarryException {
         String argument = command.substring(keyword.length()).trim();
@@ -203,12 +205,12 @@ public class Larry {
     /**
      * Parses and validates a one-based task number supplied to a task command.
      *
-     * @param command   full mark, unmark, or delete command
-     * @param keyword   command keyword
-     * @param taskCount number of tasks currently stored
-     * @return validated zero-based task index
-     * @throws LarryException if the task number is absent, non-numeric, or out of
-     *                        range
+     * @param command Full mark, unmark, or delete command.
+     * @param keyword Command keyword.
+     * @param taskCount Number of tasks currently stored.
+     * @return Validated zero-based task index.
+     * @throws LarryException If the task number is absent, non-numeric, or out of
+     *         range.
      */
     private static int parseTaskIndex(String command, String keyword, int taskCount)
             throws LarryException {
