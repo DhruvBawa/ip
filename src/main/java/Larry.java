@@ -16,9 +16,8 @@ public class Larry {
      * Starts Larry and responds to commands until the user enters {@code bye}.
      *
      * @param args Command-line arguments; not used.
-     * @throws IOException If Larry cannot load or save the task list.
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         System.out.println(SEPARATOR + "\n");
 
         String banner = """
@@ -64,7 +63,7 @@ public class Larry {
         System.out.println(SEPARATOR);
 
         Storage storage = new Storage(DATA_FILE_PATH);
-        ArrayList<Task> tasks = storage.loadTasks();
+        ArrayList<Task> tasks = loadTasks(storage);
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine();
@@ -87,21 +86,21 @@ public class Larry {
                     int taskIndex = parseTaskIndex(command, "mark", tasks.size());
                     Task task = tasks.get(taskIndex);
                     task.markAsDone();
-                    storage.saveTasks(tasks);
+                    saveTasks(storage, tasks);
                     System.out.println(INIT_SPACE + "EVIL LARRY has marked this task as done:");
                     System.out.println(PRE_TASK_SPACE + task);
                 } else if (isCommand(command, "unmark")) {
                     int taskIndex = parseTaskIndex(command, "unmark", tasks.size());
                     Task task = tasks.get(taskIndex);
                     task.markAsNotDone();
-                    storage.saveTasks(tasks);
+                    saveTasks(storage, tasks);
                     System.out.println(INIT_SPACE
                             + "EVIL LARRY has marked this task as not done yet:");
                     System.out.println(PRE_TASK_SPACE + task);
                 } else if (isCommand(command, "delete")) {
                     int taskIndex = parseTaskIndex(command, "delete", tasks.size());
                     Task removedTask = tasks.remove(taskIndex);
-                    storage.saveTasks(tasks);
+                    saveTasks(storage, tasks);
                     System.out.println(INIT_SPACE + "EVIL LARRY removed this task:");
                     System.out.println(PRE_TASK_SPACE + removedTask);
                     String taskWord = tasks.size() == 1 ? "task" : "tasks";
@@ -110,7 +109,7 @@ public class Larry {
                 } else {
                     Task newTask = parseTask(command);
                     tasks.add(newTask);
-                    storage.saveTasks(tasks);
+                    saveTasks(storage, tasks);
                     System.out.println(INIT_SPACE + "EVIL LARRY has added this task for you:");
                     System.out.println(PRE_TASK_SPACE + newTask);
                     String taskWord = tasks.size() == 1 ? "task" : "tasks";
@@ -124,6 +123,37 @@ public class Larry {
             System.out.println(SEPARATOR);
         }
         scanner.close();
+    }
+
+    /**
+     * Loads saved tasks without preventing Larry from starting after a read failure.
+     *
+     * @param storage Storage containing the task data.
+     * @return Loaded tasks, or an empty list when the data file cannot be read.
+     */
+    private static ArrayList<Task> loadTasks(Storage storage) {
+        try {
+            return storage.loadTasks();
+        } catch (IOException | SecurityException e) {
+            System.err.println("WARNING: EVIL LARRY could not read the task data file. "
+                    + "Starting with an empty task list. " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Saves tasks and warns the user if the latest change cannot be persisted.
+     *
+     * @param storage Storage receiving the task data.
+     * @param tasks Current tasks to save.
+     */
+    private static void saveTasks(Storage storage, ArrayList<Task> tasks) {
+        try {
+            storage.saveTasks(tasks);
+        } catch (IOException | SecurityException e) {
+            System.err.println("WARNING: EVIL LARRY could not save the task data file. "
+                    + "The latest change is available only in this session. " + e.getMessage());
+        }
     }
 
     /**
