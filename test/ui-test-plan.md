@@ -108,6 +108,66 @@ What do you want to do?
     __________________________________________________________
 ```
 
+## Test Case: Show deadlines and events occurring on a date
+
+### Aim
+
+Verify that the on command displays deadlines and events occurring on the requested date, includes multi-day events, excludes todos, and retains original task numbers.
+
+### Inputs
+
+```text
+todo prepare notes
+deadline submit form /by 06-09-2026 0930
+event conference /from 05-09-2026 0900 /to 07-09-2026 1700
+deadline later task /by 08-09-2026 1200
+on 06/09
+on 09-09-2026
+bye
+```
+
+### Expected output
+
+```text
+         ██████████████████████████████████████████████
+
+I'm EVIL LARRY.
+What do you want to do?
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY has added this task for you:
+       [T][ ] prepare notes
+     EVIL LARRY says you have 1 task in the list.
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY has added this task for you:
+       [D][ ] submit form (by: 6 Sep 2026, 9:30 AM)
+     EVIL LARRY says you have 2 tasks in the list.
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY has added this task for you:
+       [E][ ] conference (from: 5 Sep 2026, 9:00 AM to: 7 Sep 2026, 5:00 PM)
+     EVIL LARRY says you have 3 tasks in the list.
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY has added this task for you:
+       [D][ ] later task (by: 8 Sep 2026, 12:00 PM)
+     EVIL LARRY says you have 4 tasks in the list.
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY says these tasks occur on 6 Sep 2026:
+     2.[D][ ] submit form (by: 6 Sep 2026, 9:30 AM)
+     3.[E][ ] conference (from: 5 Sep 2026, 9:00 AM to: 7 Sep 2026, 5:00 PM)
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY says these tasks occur on 9 Sep 2026:
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY has decided to let you go
+     FOR NOW...
+    __________________________________________________________
+```
+
 ## Test Case: Exercise automatic saving after task changes
 
 ### Aim
@@ -387,6 +447,8 @@ event meeting /from Mon
 event meeting /to Tue
 event meeting from Mon /to Tue
 event invalid end /from 06-08-2026 1400 /to tomorrow
+on
+on 2026-09-06
 list
 bye
 ```
@@ -403,6 +465,12 @@ What do you want to do?
      EVIL LARRY has added this task for you:
        [T][ ] read book
      EVIL LARRY says you have 1 task in the list.
+    __________________________________________________________
+    __________________________________________________________
+     ERROR!! Fix your inputs Before EVIL LARRY comes after you!
+    __________________________________________________________
+    __________________________________________________________
+     ERROR!! Fix your inputs Before EVIL LARRY comes after you!
     __________________________________________________________
     __________________________________________________________
      ERROR!! Fix your inputs Before EVIL LARRY comes after you!
