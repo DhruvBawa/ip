@@ -1,3 +1,5 @@
+package larry.exception;
+
 /**
  * Represents an invalid command or input that Larry can report to the user.
  */

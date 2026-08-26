@@ -1,5 +1,14 @@
+package larry;
+
 import java.io.IOException;
 import java.nio.file.Path;
+
+import larry.command.Command;
+import larry.exception.LarryException;
+import larry.parser.Parser;
+import larry.storage.Storage;
+import larry.task.TaskList;
+import larry.ui.Ui;
 
 /**
  * Runs the Larry chatbot application.
