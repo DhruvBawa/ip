@@ -18,8 +18,37 @@ public class Parser {
      * @param keyword Command keyword to match.
      * @return True when the input invokes the specified command.
      */
-    public static boolean isCommand(String input, String keyword) {
+    private static boolean isCommand(String input, String keyword) {
         return input.equals(keyword) || input.startsWith(keyword + " ");
+    }
+
+    /**
+     * Parses a full user command into a command that Larry can execute.
+     *
+     * @param command Full user command.
+     * @return Command represented by the user input.
+     * @throws LarryException If the command or its arguments are invalid.
+     */
+    public static Command parseCommand(String command) throws LarryException {
+        if (command.equals("bye")) {
+            return new ExitCommand();
+        }
+        if (command.equals("list")) {
+            return new ListCommand();
+        }
+        if (isCommand(command, "on")) {
+            return new DateQueryCommand(parseDate(command, "on"));
+        }
+        if (isCommand(command, "mark")) {
+            return new MarkCommand(parseTaskIndex(command, "mark"));
+        }
+        if (isCommand(command, "unmark")) {
+            return new UnmarkCommand(parseTaskIndex(command, "unmark"));
+        }
+        if (isCommand(command, "delete")) {
+            return new DeleteCommand(parseTaskIndex(command, "delete"));
+        }
+        return new AddCommand(parseTask(command));
     }
 
     /**
@@ -29,7 +58,7 @@ public class Parser {
      * @return Task represented by the command.
      * @throws LarryException If the command or any required field is invalid.
      */
-    public static Task parseTask(String command) throws LarryException {
+    private static Task parseTask(String command) throws LarryException {
         if (isCommand(command, "todo")) {
             return new Todo(requireArgument(command, "todo"));
         }
@@ -86,7 +115,7 @@ public class Parser {
      * @return Parsed date.
      * @throws LarryException If the date is absent or invalid.
      */
-    public static LocalDate parseDate(String command, String keyword) throws LarryException {
+    private static LocalDate parseDate(String command, String keyword) throws LarryException {
         String dateText = requireArgument(command, keyword);
         try {
             return TaskDateTime.parseDate(dateText);
@@ -96,20 +125,18 @@ public class Parser {
     }
 
     /**
-     * Parses and validates a one-based task number supplied to a task command.
+     * Parses a one-based task number supplied to a task command.
      *
      * @param command Full mark, unmark, or delete command.
      * @param keyword Command keyword.
-     * @param taskCount Number of tasks currently stored.
-     * @return Validated zero-based task index.
-     * @throws LarryException If the task number is absent, non-numeric, or out of range.
+     * @return Zero-based task index.
+     * @throws LarryException If the task number is absent, non-numeric, zero, or negative.
      */
-    public static int parseTaskIndex(String command, String keyword, int taskCount)
-            throws LarryException {
+    private static int parseTaskIndex(String command, String keyword) throws LarryException {
         String indexText = requireArgument(command, keyword);
         try {
             int taskIndex = Integer.parseInt(indexText) - 1;
-            if (taskIndex < 0 || taskIndex >= taskCount) {
+            if (taskIndex < 0) {
                 throw new LarryException();
             }
             return taskIndex;

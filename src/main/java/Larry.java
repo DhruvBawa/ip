@@ -35,20 +35,17 @@ public class Larry {
      * Responds to commands until the user enters {@code bye} or closes the input.
      */
     public void run() {
+        boolean isExit = false;
         try {
             ui.showWelcome();
-            while (ui.hasNextCommand()) {
+            while (!isExit && ui.hasNextCommand()) {
                 String fullCommand = ui.readCommand();
                 ui.showSeparator();
 
-                if (fullCommand.equals("bye")) {
-                    ui.showGoodbye();
-                    ui.showSeparator();
-                    break;
-                }
-
                 try {
-                    executeCommand(fullCommand);
+                    Command command = Parser.parseCommand(fullCommand);
+                    command.execute(tasks, ui, storage);
+                    isExit = command.isExit();
                 } catch (LarryException e) {
                     ui.showError(e.getMessage());
                 } finally {
@@ -57,42 +54,6 @@ public class Larry {
             }
         } finally {
             ui.close();
-        }
-    }
-
-    /**
-     * Executes a non-exit command.
-     *
-     * @param fullCommand Full user command.
-     * @throws LarryException If the command or its arguments are invalid.
-     */
-    private void executeCommand(String fullCommand) throws LarryException {
-        if (fullCommand.equals("list")) {
-            ui.showTasks(tasks);
-        } else if (Parser.isCommand(fullCommand, "on")) {
-            ui.showTasksOnDate(Parser.parseDate(fullCommand, "on"), tasks);
-        } else if (Parser.isCommand(fullCommand, "mark")) {
-            int taskIndex = Parser.parseTaskIndex(fullCommand, "mark", tasks.size());
-            Task task = tasks.get(taskIndex);
-            task.markAsDone();
-            saveTasks();
-            ui.showTaskMarked(task);
-        } else if (Parser.isCommand(fullCommand, "unmark")) {
-            int taskIndex = Parser.parseTaskIndex(fullCommand, "unmark", tasks.size());
-            Task task = tasks.get(taskIndex);
-            task.markAsNotDone();
-            saveTasks();
-            ui.showTaskUnmarked(task);
-        } else if (Parser.isCommand(fullCommand, "delete")) {
-            int taskIndex = Parser.parseTaskIndex(fullCommand, "delete", tasks.size());
-            Task removedTask = tasks.delete(taskIndex);
-            saveTasks();
-            ui.showTaskDeleted(removedTask, tasks.size());
-        } else {
-            Task newTask = Parser.parseTask(fullCommand);
-            tasks.add(newTask);
-            saveTasks();
-            ui.showTaskAdded(newTask, tasks.size());
         }
     }
 
@@ -111,17 +72,6 @@ public class Larry {
         } catch (IOException | SecurityException e) {
             ui.showLoadingError(e.getMessage());
             return new TaskList();
-        }
-    }
-
-    /**
-     * Saves tasks and warns the user if the latest change cannot be persisted.
-     */
-    private void saveTasks() {
-        try {
-            storage.saveTasks(tasks);
-        } catch (IOException | SecurityException e) {
-            ui.showSavingError(e.getMessage());
         }
     }
 }
