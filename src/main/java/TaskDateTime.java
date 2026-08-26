@@ -1,4 +1,6 @@
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
@@ -12,11 +14,15 @@ import java.util.Optional;
  * user-friendly format.
  */
 public final class TaskDateTime {
-    private static final DateTimeFormatter INPUT_FORMATTER =
-            DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm", Locale.ENGLISH)
+    private static final String CURRENT_DATE_PROPERTY = "larry.currentDate";
+    private static final DateTimeFormatter DATE_FORMATTER =
+            DateTimeFormatter.ofPattern("d-M-uuuu", Locale.ENGLISH)
+                    .withResolverStyle(ResolverStyle.STRICT);
+    private static final DateTimeFormatter TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("HHmm", Locale.ENGLISH)
                     .withResolverStyle(ResolverStyle.STRICT);
     private static final DateTimeFormatter DISPLAY_FORMATTER =
-            DateTimeFormatter.ofPattern("MMM d uuuu, h:mm a", Locale.ENGLISH);
+            DateTimeFormatter.ofPattern("d MMM uuuu, h:mm a", Locale.ENGLISH);
     private static final DateTimeFormatter STORAGE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
     private final String sourceText;
@@ -25,12 +31,16 @@ public final class TaskDateTime {
     /**
      * Creates a date-time value from Larry's command format.
      *
-     * @param input Date and time in {@code yyyy-MM-dd HHmm} format.
+     * Dates use day-month-year order and can appear before or after the time.
+     * An omitted year means the current year, while a time without a date means
+     * today.
+     *
+     * @param input Date and time text accepted by Larry.
      * @throws DateTimeParseException If the input is not a valid date and time.
      */
     public TaskDateTime(String input) {
         Objects.requireNonNull(input, "input");
-        LocalDateTime parsedValue = LocalDateTime.parse(input, INPUT_FORMATTER);
+        LocalDateTime parsedValue = parseInput(input, getCurrentDate());
         this.sourceText = input;
         this.value = Optional.of(parsedValue);
     }
@@ -84,6 +94,127 @@ public final class TaskDateTime {
     }
 
     /**
+     * Returns today's date, allowing automated tests to provide a fixed date.
+     *
+     * @return Current local date or the configured test date.
+     */
+    private static LocalDate getCurrentDate() {
+        String configuredDate = System.getProperty(CURRENT_DATE_PROPERTY);
+        if (configuredDate == null) {
+            return LocalDate.now();
+        }
+        return LocalDate.parse(configuredDate, DateTimeFormatter.ISO_LOCAL_DATE);
+    }
+
+    /**
+     * Parses supported combinations of date and time using one reference date.
+     *
+     * @param input Date and time text accepted by Larry.
+     * @param currentDate Date used when the year or full date is omitted.
+     * @return Parsed date and time.
+     * @throws DateTimeParseException If the input is not a supported valid value.
+     */
+    private static LocalDateTime parseInput(String input, LocalDate currentDate) {
+        String[] parts = input.trim().split("\\s+");
+        if (parts.length == 1) {
+            return LocalDateTime.of(currentDate, parseTime(parts[0], input));
+        }
+        if (parts.length != 2) {
+            throw invalidInput(input);
+        }
+
+        if (isDate(parts[0]) && isTime(parts[1])) {
+            return LocalDateTime.of(parseDate(parts[0], currentDate, input),
+                    parseTime(parts[1], input));
+        }
+        if (isTime(parts[0]) && isDate(parts[1])) {
+            return LocalDateTime.of(parseDate(parts[1], currentDate, input),
+                    parseTime(parts[0], input));
+        }
+        throw invalidInput(input);
+    }
+
+    /**
+     * Parses a Singapore-style date, filling in an omitted year.
+     *
+     * @param dateText Date text using hyphens or slashes.
+     * @param currentDate Date supplying the current year.
+     * @param fullInput Full input used in parse errors.
+     * @return Parsed date.
+     */
+    private static LocalDate parseDate(String dateText, LocalDate currentDate, String fullInput) {
+        String normalizedDate = dateText.replace('/', '-');
+        if (dateText.matches("\\d{1,2}[-/]\\d{1,2}")) {
+            normalizedDate += "-" + currentDate.getYear();
+        } else if (!dateText.matches("\\d{1,2}[-/]\\d{1,2}[-/]\\d{4}")) {
+            throw invalidInput(fullInput);
+        }
+
+        try {
+            return LocalDate.parse(normalizedDate, DATE_FORMATTER);
+        } catch (DateTimeParseException e) {
+            throw invalidInput(fullInput);
+        }
+    }
+
+    /**
+     * Parses a 24-hour time with or without a colon.
+     *
+     * @param timeText Time text to parse.
+     * @param fullInput Full input used in parse errors.
+     * @return Parsed time.
+     */
+    private static LocalTime parseTime(String timeText, String fullInput) {
+        String normalizedTime;
+        if (timeText.matches("\\d{1,2}:\\d{2}")) {
+            normalizedTime = timeText.replace(":", "");
+        } else if (timeText.matches("\\d{3,4}")) {
+            normalizedTime = timeText;
+        } else {
+            throw invalidInput(fullInput);
+        }
+        if (normalizedTime.length() == 3) {
+            normalizedTime = "0" + normalizedTime;
+        }
+
+        try {
+            return LocalTime.parse(normalizedTime, TIME_FORMATTER);
+        } catch (DateTimeParseException e) {
+            throw invalidInput(fullInput);
+        }
+    }
+
+    /**
+     * Checks whether a token has the shape of a supported date.
+     *
+     * @param value Token to inspect.
+     * @return True when the token contains a date separator.
+     */
+    private static boolean isDate(String value) {
+        return value.contains("-") || value.contains("/");
+    }
+
+    /**
+     * Checks whether a token has the shape of a supported time.
+     *
+     * @param value Token to inspect.
+     * @return True when the token contains only digits and an optional colon.
+     */
+    private static boolean isTime(String value) {
+        return value.matches("\\d{3,4}") || value.matches("\\d{1,2}:\\d{2}");
+    }
+
+    /**
+     * Creates a consistent parse failure for unsupported input.
+     *
+     * @param input Invalid date and time text.
+     * @return Parse exception describing the invalid input.
+     */
+    private static DateTimeParseException invalidInput(String input) {
+        return new DateTimeParseException("Unsupported date and time", input, 0);
+    }
+
+    /**
      * Returns the stable representation used in the task data file.
      *
      * @return Date and time text suitable for storage.
@@ -96,7 +227,7 @@ public final class TaskDateTime {
     /**
      * Returns a user-friendly date and time.
      *
-     * @return Date and time in a format such as {@code Dec 2 2019, 6:00 PM}.
+     * @return Date and time in a format such as {@code 2 Dec 2019, 6:00 PM}.
      */
     @Override
     public String toString() {

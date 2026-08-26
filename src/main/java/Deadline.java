@@ -10,7 +10,7 @@ public class Deadline extends Task {
      * Creates a deadline task from date and time text.
      *
      * @param description Description of the task.
-     * @param dueDateText Date and time in {@code yyyy-MM-dd HHmm} format.
+     * @param dueDateText Date and time text accepted by Larry.
      */
     public Deadline(String description, String dueDateText) {
         super(description);
