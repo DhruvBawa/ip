@@ -1,4 +1,6 @@
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 /**
  * Represents a task that occurs over a specified period.
@@ -62,6 +64,19 @@ public class Event extends Task {
      */
     public TaskDateTime getEndDateTime() {
         return endDateTime;
+    }
+
+    @Override
+    public boolean occursOn(LocalDate date) {
+        Optional<LocalDateTime> startValue = startDateTime.getValue();
+        Optional<LocalDateTime> endValue = endDateTime.getValue();
+        if (startValue.isEmpty() || endValue.isEmpty()) {
+            return false;
+        }
+
+        LocalDate startDate = startValue.get().toLocalDate();
+        LocalDate endDate = endValue.get().toLocalDate();
+        return !date.isBefore(startDate) && !date.isAfter(endDate);
     }
 
     /**

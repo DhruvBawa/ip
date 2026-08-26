@@ -21,7 +21,9 @@ public final class TaskDateTime {
     private static final DateTimeFormatter TIME_FORMATTER =
             DateTimeFormatter.ofPattern("HHmm", Locale.ENGLISH)
                     .withResolverStyle(ResolverStyle.STRICT);
-    private static final DateTimeFormatter DISPLAY_FORMATTER =
+    private static final DateTimeFormatter DISPLAY_DATE_FORMATTER =
+            DateTimeFormatter.ofPattern("d MMM uuuu", Locale.ENGLISH);
+    private static final DateTimeFormatter DISPLAY_DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("d MMM uuuu, h:mm a", Locale.ENGLISH);
     private static final DateTimeFormatter STORAGE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
@@ -91,6 +93,41 @@ public final class TaskDateTime {
      */
     public Optional<LocalDateTime> getValue() {
         return value;
+    }
+
+    /**
+     * Parses a date using Singapore day-month-year order.
+     * An omitted year means the current year.
+     *
+     * @param input Date text using hyphens or slashes.
+     * @return Parsed date.
+     * @throws DateTimeParseException If the input is not a supported valid date.
+     */
+    public static LocalDate parseDate(String input) {
+        Objects.requireNonNull(input, "input");
+        return parseDate(input.trim(), getCurrentDate(), input);
+    }
+
+    /**
+     * Formats a date using Singapore day-month-year order.
+     *
+     * @param date Date to format.
+     * @return Date in a format such as {@code 2 Dec 2019}.
+     */
+    public static String formatDate(LocalDate date) {
+        return Objects.requireNonNull(date, "date").format(DISPLAY_DATE_FORMATTER);
+    }
+
+    /**
+     * Checks whether this value occurs on a date.
+     *
+     * @param date Date to check.
+     * @return True when the parsed value falls on the date.
+     */
+    public boolean isOn(LocalDate date) {
+        Objects.requireNonNull(date, "date");
+        return value.map(dateTime -> dateTime.toLocalDate().equals(date))
+                .orElse(false);
     }
 
     /**
@@ -231,7 +268,7 @@ public final class TaskDateTime {
      */
     @Override
     public String toString() {
-        return value.map(dateTime -> dateTime.format(DISPLAY_FORMATTER))
+        return value.map(dateTime -> dateTime.format(DISPLAY_DATE_TIME_FORMATTER))
                 .orElse(sourceText);
     }
 }

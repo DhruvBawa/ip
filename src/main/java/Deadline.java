@@ -1,3 +1,4 @@
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -46,6 +47,11 @@ public class Deadline extends Task {
      */
     public TaskDateTime getDueDateTime() {
         return dueDateTime;
+    }
+
+    @Override
+    public boolean occursOn(LocalDate date) {
+        return dueDateTime.isOn(date);
     }
 
     /**
