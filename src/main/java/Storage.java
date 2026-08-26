@@ -9,12 +9,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Loads and saves Larry's task list on disk.
  */
 public class Storage {
     private final Path filePath;
+    private final ArrayList<String> loadWarnings;
 
     /** Prevents a failed load from being overwritten by an empty task list. */
     private boolean isSaveBlocked;
@@ -26,6 +28,7 @@ public class Storage {
      */
     public Storage(Path filePath) {
         this.filePath = filePath;
+        this.loadWarnings = new ArrayList<>();
         this.isSaveBlocked = false;
     }
 
@@ -36,8 +39,9 @@ public class Storage {
      * @return Tasks stored in the data file.
      * @throws IOException If the data file cannot be read.
      */
-    public ArrayList<Task> loadTasks() throws IOException {
-        ArrayList<Task> tasks = new ArrayList<>();
+    public TaskList loadTasks() throws IOException {
+        TaskList tasks = new TaskList();
+        loadWarnings.clear();
         try {
             if (!Files.exists(filePath)) {
                 isSaveBlocked = false;
@@ -59,7 +63,7 @@ public class Storage {
                     try {
                         tasks.add(deserialize(line));
                     } catch (IllegalArgumentException e) {
-                        System.err.println("WARNING: Skipping invalid task data at line "
+                        loadWarnings.add("WARNING: Skipping invalid task data at line "
                                 + lineNumber + ": " + e.getMessage());
                     }
                 }
@@ -73,12 +77,21 @@ public class Storage {
     }
 
     /**
+     * Returns warnings produced while loading the current task list.
+     *
+     * @return Read-only copy of the loading warnings.
+     */
+    public List<String> getLoadWarnings() {
+        return List.copyOf(loadWarnings);
+    }
+
+    /**
      * Replaces the data file with the current task list.
      *
      * @param tasks Current tasks to save.
      * @throws IOException If the directory or data file cannot be written.
      */
-    public void saveTasks(ArrayList<Task> tasks) throws IOException {
+    public void saveTasks(TaskList tasks) throws IOException {
         if (isSaveBlocked) {
             throw new IOException("Saving is disabled because the task file could not be loaded.");
         }
