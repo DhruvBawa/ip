@@ -16,8 +16,8 @@ Verify that todo, deadline, and event commands add correctly typed tasks, preser
 
 ```text
 todo read book
-deadline return book /by June 6th
-event project meeting /from Aug 6th 2pm /to 4pm
+deadline return book /by 2026-06-06 1800
+event project meeting /from 2026-08-06 1400 /to 2026-08-06 1600
 list
 bye
 ```
@@ -37,19 +37,19 @@ What do you want to do?
     __________________________________________________________
     __________________________________________________________
      EVIL LARRY has added this task for you:
-       [D][ ] return book (by: June 6th)
+       [D][ ] return book (by: Jun 6 2026, 6:00 PM)
      EVIL LARRY says you have 2 tasks in the list.
     __________________________________________________________
     __________________________________________________________
      EVIL LARRY has added this task for you:
-       [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+       [E][ ] project meeting (from: Aug 6 2026, 2:00 PM to: Aug 6 2026, 4:00 PM)
      EVIL LARRY says you have 3 tasks in the list.
     __________________________________________________________
     __________________________________________________________
      Here are the tasks EVIL LARRY says are in your list:
      1.[T][ ] read book
-     2.[D][ ] return book (by: June 6th)
-     3.[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+     2.[D][ ] return book (by: Jun 6 2026, 6:00 PM)
+     3.[E][ ] project meeting (from: Aug 6 2026, 2:00 PM to: Aug 6 2026, 4:00 PM)
     __________________________________________________________
     __________________________________________________________
      EVIL LARRY has decided to let you go
@@ -61,14 +61,14 @@ What do you want to do?
 
 ### Aim
 
-Exercise add, mark, and delete operations that save every task type, including field-separator and backslash characters, while preserving the console UI.
+Exercise add, mark, and delete operations that save every task type, including field-separator and backslash characters in descriptions, while preserving the console UI.
 
 ### Inputs
 
 ```text
 todo read | book \ notes
-deadline return | book /by June | 6th
-event project | meeting /from Aug \ 6th 2pm /to 4 | pm
+deadline return | book /by 2026-06-06 1800
+event project | meeting \ notes /from 2026-08-06 1400 /to 2026-08-06 1600
 todo temporary task
 mark 1
 delete 4
@@ -90,12 +90,12 @@ What do you want to do?
     __________________________________________________________
     __________________________________________________________
      EVIL LARRY has added this task for you:
-       [D][ ] return | book (by: June | 6th)
+       [D][ ] return | book (by: Jun 6 2026, 6:00 PM)
      EVIL LARRY says you have 2 tasks in the list.
     __________________________________________________________
     __________________________________________________________
      EVIL LARRY has added this task for you:
-       [E][ ] project | meeting (from: Aug \ 6th 2pm to: 4 | pm)
+       [E][ ] project | meeting \ notes (from: Aug 6 2026, 2:00 PM to: Aug 6 2026, 4:00 PM)
      EVIL LARRY says you have 3 tasks in the list.
     __________________________________________________________
     __________________________________________________________
@@ -252,8 +252,8 @@ Verify that deleting a typed task reports the removed item exactly and leaves th
 
 ```text
 todo read book
-deadline return book /by June 6th
-event project meeting /from Aug 6th 2pm /to 4pm
+deadline return book /by 2026-06-06 1800
+event project meeting /from 2026-08-06 1400 /to 2026-08-06 1600
 todo join sports club
 mark 2
 mark 4
@@ -277,12 +277,12 @@ What do you want to do?
     __________________________________________________________
     __________________________________________________________
      EVIL LARRY has added this task for you:
-       [D][ ] return book (by: June 6th)
+       [D][ ] return book (by: Jun 6 2026, 6:00 PM)
      EVIL LARRY says you have 2 tasks in the list.
     __________________________________________________________
     __________________________________________________________
      EVIL LARRY has added this task for you:
-       [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+       [E][ ] project meeting (from: Aug 6 2026, 2:00 PM to: Aug 6 2026, 4:00 PM)
      EVIL LARRY says you have 3 tasks in the list.
     __________________________________________________________
     __________________________________________________________
@@ -292,7 +292,7 @@ What do you want to do?
     __________________________________________________________
     __________________________________________________________
      EVIL LARRY has marked this task as done:
-       [D][X] return book (by: June 6th)
+       [D][X] return book (by: Jun 6 2026, 6:00 PM)
     __________________________________________________________
     __________________________________________________________
      EVIL LARRY has marked this task as done:
@@ -300,13 +300,13 @@ What do you want to do?
     __________________________________________________________
     __________________________________________________________
      EVIL LARRY removed this task:
-       [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+       [E][ ] project meeting (from: Aug 6 2026, 2:00 PM to: Aug 6 2026, 4:00 PM)
      EVIL LARRY says you have 3 tasks in the list.
     __________________________________________________________
     __________________________________________________________
      Here are the tasks EVIL LARRY says are in your list:
      1.[T][ ] read book
-     2.[D][X] return book (by: June 6th)
+     2.[D][X] return book (by: Jun 6 2026, 6:00 PM)
      3.[T][X] join sports club
     __________________________________________________________
     __________________________________________________________
@@ -330,10 +330,12 @@ todo
 deadline /by Sunday
 deadline return book /by
 deadline return book by Sunday
+deadline impossible date /by 2026-02-30 1200
 event /from Mon /to Tue
 event meeting /from Mon
 event meeting /to Tue
 event meeting from Mon /to Tue
+event invalid end /from 2026-08-06 1400 /to tomorrow
 list
 bye
 ```
@@ -350,6 +352,12 @@ What do you want to do?
      EVIL LARRY has added this task for you:
        [T][ ] read book
      EVIL LARRY says you have 1 task in the list.
+    __________________________________________________________
+    __________________________________________________________
+     ERROR!! Fix your inputs Before EVIL LARRY comes after you!
+    __________________________________________________________
+    __________________________________________________________
+     ERROR!! Fix your inputs Before EVIL LARRY comes after you!
     __________________________________________________________
     __________________________________________________________
      ERROR!! Fix your inputs Before EVIL LARRY comes after you!
