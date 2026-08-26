@@ -1,3 +1,10 @@
+package larry.command;
+
+import larry.storage.Storage;
+import larry.task.Task;
+import larry.task.TaskList;
+import larry.ui.Ui;
+
 /**
  * Adds a task to the task list.
  */

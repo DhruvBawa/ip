@@ -27,7 +27,7 @@
                   <artifactId>exec-maven-plugin</artifactId>
                   <version>3.6.3</version>
                   <configuration>
-                      <mainClass>Larry</mainClass>
+                      <mainClass>larry.Larry</mainClass>
                   </configuration>
               </plugin>
           </plugins>
