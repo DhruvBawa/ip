@@ -1,3 +1,5 @@
+package larry.task;
+
 import java.time.LocalDate;
 
 /**
@@ -24,6 +26,24 @@ public class Task {
      */
     public String getStatusIcon() {
         return isDone ? "X" : " ";
+    }
+
+    /**
+     * Returns the task description.
+     *
+     * @return Description of the task.
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * Checks whether the task is completed.
+     *
+     * @return True when the task is completed.
+     */
+    public boolean isDone() {
+        return isDone;
     }
 
     /**
