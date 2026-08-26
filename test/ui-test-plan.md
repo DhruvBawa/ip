@@ -31,25 +31,86 @@ I'm EVIL LARRY.
 What do you want to do?
     __________________________________________________________
     __________________________________________________________
-     Got it. I've added this task:
+     EVIL LARRY has added this task for you:
        [T][ ] read book
-     Now you have 1 task in the list.
+     EVIL LARRY says you have 1 task in the list.
     __________________________________________________________
     __________________________________________________________
-     Got it. I've added this task:
+     EVIL LARRY has added this task for you:
        [D][ ] return book (by: June 6th)
-     Now you have 2 tasks in the list.
+     EVIL LARRY says you have 2 tasks in the list.
     __________________________________________________________
     __________________________________________________________
-     Got it. I've added this task:
+     EVIL LARRY has added this task for you:
        [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
-     Now you have 3 tasks in the list.
+     EVIL LARRY says you have 3 tasks in the list.
     __________________________________________________________
     __________________________________________________________
-     Here are the tasks in your list:
+     Here are the tasks EVIL LARRY says are in your list:
      1.[T][ ] read book
      2.[D][ ] return book (by: June 6th)
      3.[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY has decided to let you go
+     FOR NOW...
+    __________________________________________________________
+```
+
+## Test Case: Exercise automatic saving after task changes
+
+### Aim
+
+Exercise add, mark, and delete operations that save the current todo, deadline, and event data to `data/larry.txt` while preserving the console UI.
+
+### Inputs
+
+```text
+todo read book
+deadline return book /by June 6th
+event project meeting /from Aug 6th 2pm /to 4pm
+todo temporary task
+mark 1
+delete 4
+bye
+```
+
+### Expected output
+
+```text
+         ██████████████████████████████████████████████
+
+I'm EVIL LARRY.
+What do you want to do?
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY has added this task for you:
+       [T][ ] read book
+     EVIL LARRY says you have 1 task in the list.
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY has added this task for you:
+       [D][ ] return book (by: June 6th)
+     EVIL LARRY says you have 2 tasks in the list.
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY has added this task for you:
+       [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+     EVIL LARRY says you have 3 tasks in the list.
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY has added this task for you:
+       [T][ ] temporary task
+     EVIL LARRY says you have 4 tasks in the list.
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY has marked this task as done:
+       [T][X] read book
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY removed this task:
+       [T][ ] temporary task
+     EVIL LARRY says you have 3 tasks in the list.
     __________________________________________________________
     __________________________________________________________
      EVIL LARRY has decided to let you go
@@ -82,20 +143,20 @@ I'm EVIL LARRY.
 What do you want to do?
     __________________________________________________________
     __________________________________________________________
-     Got it. I've added this task:
+     EVIL LARRY has added this task for you:
        [T][ ] return book
-     Now you have 1 task in the list.
+     EVIL LARRY says you have 1 task in the list.
     __________________________________________________________
     __________________________________________________________
-     Nice! I've marked this task as done:
+     EVIL LARRY has marked this task as done:
        [T][X] return book
     __________________________________________________________
     __________________________________________________________
-     OK, I've marked this task as not done yet:
+     EVIL LARRY has marked this task as not done yet:
        [T][ ] return book
     __________________________________________________________
     __________________________________________________________
-     Here are the tasks in your list:
+     Here are the tasks EVIL LARRY says are in your list:
      1.[T][ ] return book
     __________________________________________________________
     __________________________________________________________
@@ -134,46 +195,46 @@ I'm EVIL LARRY.
 What do you want to do?
     __________________________________________________________
     __________________________________________________________
-     Got it. I've added this task:
+     EVIL LARRY has added this task for you:
        [T][ ] first task
-     Now you have 1 task in the list.
+     EVIL LARRY says you have 1 task in the list.
     __________________________________________________________
     __________________________________________________________
-     Got it. I've added this task:
+     EVIL LARRY has added this task for you:
        [T][ ] second task
-     Now you have 2 tasks in the list.
+     EVIL LARRY says you have 2 tasks in the list.
     __________________________________________________________
     __________________________________________________________
-     Got it. I've added this task:
+     EVIL LARRY has added this task for you:
        [T][ ] third task
-     Now you have 3 tasks in the list.
+     EVIL LARRY says you have 3 tasks in the list.
     __________________________________________________________
     __________________________________________________________
-     Noted. I've removed this task:
+     EVIL LARRY removed this task:
        [T][ ] first task
-     Now you have 2 tasks in the list.
+     EVIL LARRY says you have 2 tasks in the list.
     __________________________________________________________
     __________________________________________________________
-     Here are the tasks in your list:
+     Here are the tasks EVIL LARRY says are in your list:
      1.[T][ ] second task
      2.[T][ ] third task
     __________________________________________________________
     __________________________________________________________
-     Noted. I've removed this task:
+     EVIL LARRY removed this task:
        [T][ ] third task
-     Now you have 1 task in the list.
+     EVIL LARRY says you have 1 task in the list.
     __________________________________________________________
     __________________________________________________________
-     Here are the tasks in your list:
+     Here are the tasks EVIL LARRY says are in your list:
      1.[T][ ] second task
     __________________________________________________________
     __________________________________________________________
-     Noted. I've removed this task:
+     EVIL LARRY removed this task:
        [T][ ] second task
-     Now you have 0 tasks in the list.
+     EVIL LARRY says you have 0 tasks in the list.
     __________________________________________________________
     __________________________________________________________
-     Here are the tasks in your list:
+     Here are the tasks EVIL LARRY says are in your list:
     __________________________________________________________
     __________________________________________________________
      EVIL LARRY has decided to let you go
@@ -210,40 +271,40 @@ I'm EVIL LARRY.
 What do you want to do?
     __________________________________________________________
     __________________________________________________________
-     Got it. I've added this task:
+     EVIL LARRY has added this task for you:
        [T][ ] read book
-     Now you have 1 task in the list.
+     EVIL LARRY says you have 1 task in the list.
     __________________________________________________________
     __________________________________________________________
-     Got it. I've added this task:
+     EVIL LARRY has added this task for you:
        [D][ ] return book (by: June 6th)
-     Now you have 2 tasks in the list.
+     EVIL LARRY says you have 2 tasks in the list.
     __________________________________________________________
     __________________________________________________________
-     Got it. I've added this task:
+     EVIL LARRY has added this task for you:
        [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
-     Now you have 3 tasks in the list.
+     EVIL LARRY says you have 3 tasks in the list.
     __________________________________________________________
     __________________________________________________________
-     Got it. I've added this task:
+     EVIL LARRY has added this task for you:
        [T][ ] join sports club
-     Now you have 4 tasks in the list.
+     EVIL LARRY says you have 4 tasks in the list.
     __________________________________________________________
     __________________________________________________________
-     Nice! I've marked this task as done:
+     EVIL LARRY has marked this task as done:
        [D][X] return book (by: June 6th)
     __________________________________________________________
     __________________________________________________________
-     Nice! I've marked this task as done:
+     EVIL LARRY has marked this task as done:
        [T][X] join sports club
     __________________________________________________________
     __________________________________________________________
-     Noted. I've removed this task:
+     EVIL LARRY removed this task:
        [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
-     Now you have 3 tasks in the list.
+     EVIL LARRY says you have 3 tasks in the list.
     __________________________________________________________
     __________________________________________________________
-     Here are the tasks in your list:
+     Here are the tasks EVIL LARRY says are in your list:
      1.[T][ ] read book
      2.[D][X] return book (by: June 6th)
      3.[T][X] join sports club
@@ -286,9 +347,9 @@ I'm EVIL LARRY.
 What do you want to do?
     __________________________________________________________
     __________________________________________________________
-     Got it. I've added this task:
+     EVIL LARRY has added this task for you:
        [T][ ] read book
-     Now you have 1 task in the list.
+     EVIL LARRY says you have 1 task in the list.
     __________________________________________________________
     __________________________________________________________
      ERROR!! Fix your inputs Before EVIL LARRY comes after you!
@@ -318,7 +379,7 @@ What do you want to do?
      ERROR!! Fix your inputs Before EVIL LARRY comes after you!
     __________________________________________________________
     __________________________________________________________
-     Here are the tasks in your list:
+     Here are the tasks EVIL LARRY says are in your list:
      1.[T][ ] read book
     __________________________________________________________
     __________________________________________________________
@@ -358,9 +419,9 @@ I'm EVIL LARRY.
 What do you want to do?
     __________________________________________________________
     __________________________________________________________
-     Got it. I've added this task:
+     EVIL LARRY has added this task for you:
        [T][ ] read book
-     Now you have 1 task in the list.
+     EVIL LARRY says you have 1 task in the list.
     __________________________________________________________
     __________________________________________________________
      ERROR!! Fix your inputs Before EVIL LARRY comes after you!
@@ -387,7 +448,7 @@ What do you want to do?
      ERROR!! Fix your inputs Before EVIL LARRY comes after you!
     __________________________________________________________
     __________________________________________________________
-     Here are the tasks in your list:
+     Here are the tasks EVIL LARRY says are in your list:
      1.[T][ ] read book
     __________________________________________________________
     __________________________________________________________
