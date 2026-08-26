@@ -1,3 +1,5 @@
+import java.time.LocalDate;
+
 /**
  * Represents a task and its completion state.
  */
@@ -36,6 +38,17 @@ public class Task {
      */
     public void markAsNotDone() {
         isDone = false;
+    }
+
+    /**
+     * Checks whether this task occurs on a date.
+     * Tasks without date information never occur on a specific date.
+     *
+     * @param date Date to check.
+     * @return True when the task occurs on the date.
+     */
+    public boolean occursOn(LocalDate date) {
+        return false;
     }
 
     /**

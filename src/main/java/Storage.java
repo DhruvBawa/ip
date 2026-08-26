@@ -150,8 +150,11 @@ public class Storage {
 
         Task task = switch (taskType) {
             case "T" -> new Todo(fields.get(2));
-            case "D" -> new Deadline(fields.get(2), fields.get(3));
-            case "E" -> new Event(fields.get(2), fields.get(3), fields.get(4));
+            case "D" -> new Deadline(fields.get(2),
+                    TaskDateTime.fromStorageString(fields.get(3)));
+            case "E" -> new Event(fields.get(2),
+                    TaskDateTime.fromStorageString(fields.get(3)),
+                    TaskDateTime.fromStorageString(fields.get(4)));
             default -> throw new AssertionError("Task type was already validated");
         };
         if (status.equals("1")) {
@@ -239,11 +242,12 @@ public class Storage {
         String status = task.isDone ? "1" : "0";
         if (task instanceof Deadline deadline) {
             return "D | " + status + " | " + escape(task.description) + " | "
-                    + escape(deadline.dueDate);
+                    + escape(deadline.getDueDateTime().toStorageString());
         }
         if (task instanceof Event event) {
             return "E | " + status + " | " + escape(task.description) + " | "
-                    + escape(event.startTime) + " | " + escape(event.endTime);
+                    + escape(event.getStartDateTime().toStorageString()) + " | "
+                    + escape(event.getEndDateTime().toStorageString());
         }
         return "T | " + status + " | " + escape(task.description);
     }

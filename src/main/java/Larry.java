@@ -1,5 +1,7 @@
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -82,6 +84,8 @@ public class Larry {
                     for (int i = 0; i < tasks.size(); i++) {
                         System.out.println("     " + (i + 1) + "." + tasks.get(i));
                     }
+                } else if (isCommand(command, "on")) {
+                    displayTasksOnDate(command, tasks);
                 } else if (isCommand(command, "mark")) {
                     int taskIndex = parseTaskIndex(command, "mark", tasks.size());
                     Task task = tasks.get(taskIndex);
@@ -169,6 +173,35 @@ public class Larry {
     }
 
     /**
+     * Displays deadlines and events occurring on a requested date.
+     * Original task numbers are retained so the results can be used with mark,
+     * unmark, and delete commands.
+     *
+     * @param command Full date-query command.
+     * @param tasks Tasks to search.
+     * @throws LarryException If the date is absent or invalid.
+     */
+    private static void displayTasksOnDate(String command, ArrayList<Task> tasks)
+            throws LarryException {
+        String dateText = requireArgument(command, "on");
+        LocalDate date;
+        try {
+            date = TaskDateTime.parseDate(dateText);
+        } catch (DateTimeParseException e) {
+            throw new LarryException();
+        }
+
+        System.out.println(INIT_SPACE + "EVIL LARRY says these tasks occur on "
+                + TaskDateTime.formatDate(date) + ":");
+        for (int i = 0; i < tasks.size(); i++) {
+            Task task = tasks.get(i);
+            if (task.occursOn(date)) {
+                System.out.println("     " + (i + 1) + "." + task);
+            }
+        }
+    }
+
+    /**
      * Converts a task-creation command into the appropriate task subtype.
      *
      * @param command Full task-creation command.
@@ -192,7 +225,11 @@ public class Larry {
             if (description.isEmpty() || dueDate.isEmpty()) {
                 throw new LarryException();
             }
-            return new Deadline(description, dueDate);
+            try {
+                return new Deadline(description, dueDate);
+            } catch (DateTimeParseException e) {
+                throw new LarryException();
+            }
         }
 
         if (isCommand(command, "event")) {
@@ -210,7 +247,11 @@ public class Larry {
             if (description.isEmpty() || startTime.isEmpty() || endTime.isEmpty()) {
                 throw new LarryException();
             }
-            return new Event(description, startTime, endTime);
+            try {
+                return new Event(description, startTime, endTime);
+            } catch (DateTimeParseException e) {
+                throw new LarryException();
+            }
         }
 
         throw new LarryException();
