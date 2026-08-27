@@ -10,6 +10,7 @@ import larry.command.AddCommand;
 import larry.command.DateQueryCommand;
 import larry.command.DeleteCommand;
 import larry.command.ExitCommand;
+import larry.command.FindCommand;
 import larry.command.ListCommand;
 import larry.command.MarkCommand;
 import larry.command.UnmarkCommand;
@@ -54,11 +55,17 @@ class ParserTest {
     }
 
     @Test
+    void parseCommand_validFindQuery_findCommandReturned() throws LarryException {
+        assertInstanceOf(FindCommand.class, Parser.parseCommand("find book"));
+    }
+
+    @Test
     void parseCommand_unknownOrNearMatchCommand_exceptionThrown() {
         assertAll(
                 () -> assertThrows(LarryException.class, () -> Parser.parseCommand("unknown")),
                 () -> assertThrows(LarryException.class, () -> Parser.parseCommand("Bye")),
                 () -> assertThrows(LarryException.class, () -> Parser.parseCommand("list tasks")),
+                () -> assertThrows(LarryException.class, () -> Parser.parseCommand("finder book")),
                 () -> assertThrows(LarryException.class, () -> Parser.parseCommand("todoList task"))
         );
     }
@@ -70,6 +77,7 @@ class ParserTest {
                 () -> assertThrows(LarryException.class, () -> Parser.parseCommand("deadline")),
                 () -> assertThrows(LarryException.class, () -> Parser.parseCommand("event")),
                 () -> assertThrows(LarryException.class, () -> Parser.parseCommand("on")),
+                () -> assertThrows(LarryException.class, () -> Parser.parseCommand("find")),
                 () -> assertThrows(LarryException.class, () -> Parser.parseCommand("mark")),
                 () -> assertThrows(LarryException.class, () -> Parser.parseCommand("unmark")),
                 () -> assertThrows(LarryException.class, () -> Parser.parseCommand("delete"))
