@@ -1,6 +1,7 @@
 package larry.ui;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Scanner;
 
 import larry.task.Task;
@@ -112,6 +113,18 @@ public class Ui implements AutoCloseable {
         System.out.println(INIT_SPACE + "Here are the tasks EVIL LARRY says are in your list:");
         for (int i = 0; i < tasks.size(); i++) {
             System.out.println("     " + (i + 1) + "." + tasks.get(i));
+        }
+    }
+
+    /**
+     * Displays tasks whose descriptions match a search keyword.
+     *
+     * @param matchingTasks Tasks to display.
+     */
+    public void showMatchingTasks(List<Task> matchingTasks) {
+        System.out.println(INIT_SPACE + "Here are the matching tasks in your list:");
+        for (int i = 0; i < matchingTasks.size(); i++) {
+            System.out.println("     " + (i + 1) + "." + matchingTasks.get(i));
         }
     }
 
