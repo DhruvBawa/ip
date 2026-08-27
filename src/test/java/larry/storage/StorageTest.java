@@ -104,7 +104,8 @@ class StorageTest {
                 () -> assertEquals(List.of(
                         "WARNING: Skipping invalid task data at line 3: unknown task type 'X'",
                         "WARNING: Skipping invalid task data at line 4: status must be 0 or 1",
-                        "WARNING: Skipping invalid task data at line 5: wrong number of fields for task type D",
+                        "WARNING: Skipping invalid task data at line 5: "
+                                + "wrong number of fields for task type D",
                         "WARNING: Skipping invalid task data at line 6: task details cannot be blank"
                 ), warnings),
                 () -> assertThrows(UnsupportedOperationException.class,
@@ -115,7 +116,8 @@ class StorageTest {
     @Test
     void loadTasks_invalidUtf8_saveBlockedUntilSuccessfulReload() throws IOException {
         Path dataFile = temporaryDirectory.resolve("larry.txt");
-        Files.write(dataFile, new byte[]{'T', ' ', '|', ' ', '0', ' ', '|', ' ', (byte) 0xC3, 0x28});
+        byte[] invalidUtf8 = {'T', ' ', '|', ' ', '0', ' ', '|', ' ', (byte) 0xC3, 0x28};
+        Files.write(dataFile, invalidUtf8);
         Storage storage = new Storage(dataFile);
         TaskList tasks = new TaskList();
         tasks.add(new Todo("safe task"));
