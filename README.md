@@ -2,6 +2,20 @@
 
 Larry is a chatbot developed as a greenfield Java project. Given below are instructions on how to use it.
 
+## Building and running with Gradle
+
+This project uses the Gradle Wrapper, so you do not need to install Gradle globally.
+From the project root, use:
+
+```bash
+./gradlew build
+./gradlew run --console=plain
+```
+
+The first command compiles the project and runs its automated tests. The second
+command starts Larry. Gradle downloads the project's declared Gradle version on
+the first run and reuses it afterwards.
+
 ## Setting up in Intellij
 
 Prerequisites: JDK 25, update Intellij to the most recent version.
