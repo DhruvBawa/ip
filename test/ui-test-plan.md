@@ -57,6 +57,80 @@ What do you want to do?
     __________________________________________________________
 ```
 
+## Test Case: Find tasks by description keyword
+
+### Aim
+
+Verify that find matches description substrings without regard to letter case, supports multi-word phrases, reports no matches, and rejects a missing keyword.
+
+### Inputs
+
+```text
+todo read book
+deadline return book /by 06-06-2026 1800
+event project meeting /from 06-08-2026 1400 /to 06-08-2026 1600
+todo buy groceries
+mark 1
+find BOOK
+find project meeting
+find exercise
+find
+bye
+```
+
+### Expected output
+
+```text
+         ██████████████████████████████████████████████
+
+I'm EVIL LARRY.
+What do you want to do?
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY has added this task for you:
+       [T][ ] read book
+     EVIL LARRY says you have 1 task in the list.
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY has added this task for you:
+       [D][ ] return book (by: 6 Jun 2026, 6:00 PM)
+     EVIL LARRY says you have 2 tasks in the list.
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY has added this task for you:
+       [E][ ] project meeting (from: 6 Aug 2026, 2:00 PM to: 6 Aug 2026, 4:00 PM)
+     EVIL LARRY says you have 3 tasks in the list.
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY has added this task for you:
+       [T][ ] buy groceries
+     EVIL LARRY says you have 4 tasks in the list.
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY has marked this task as done:
+       [T][X] read book
+    __________________________________________________________
+    __________________________________________________________
+     Here are the matching tasks in your list:
+     1.[T][X] read book
+     2.[D][ ] return book (by: 6 Jun 2026, 6:00 PM)
+    __________________________________________________________
+    __________________________________________________________
+     Here are the matching tasks in your list:
+     1.[E][ ] project meeting (from: 6 Aug 2026, 2:00 PM to: 6 Aug 2026, 4:00 PM)
+    __________________________________________________________
+    __________________________________________________________
+     Here are the matching tasks in your list:
+    __________________________________________________________
+    __________________________________________________________
+     ERROR!! Fix your inputs Before EVIL LARRY comes after you!
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY has decided to let you go
+     FOR NOW...
+    __________________________________________________________
+```
+
 ## Test Case: Understand flexible Singapore date and time inputs
 
 ### Aim

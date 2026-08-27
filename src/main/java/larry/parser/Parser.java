@@ -8,6 +8,7 @@ import larry.command.Command;
 import larry.command.DateQueryCommand;
 import larry.command.DeleteCommand;
 import larry.command.ExitCommand;
+import larry.command.FindCommand;
 import larry.command.ListCommand;
 import larry.command.MarkCommand;
 import larry.command.UnmarkCommand;
@@ -55,6 +56,9 @@ public class Parser {
         }
         if (isCommand(command, "on")) {
             return new DateQueryCommand(parseDate(command, "on"));
+        }
+        if (isCommand(command, "find")) {
+            return new FindCommand(requireArgument(command, "find"));
         }
         if (isCommand(command, "mark")) {
             return new MarkCommand(parseTaskIndex(command, "mark"));
