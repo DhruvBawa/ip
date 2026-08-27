@@ -36,6 +36,12 @@ After every update to application code:
 2. Invoke the project-specific `test-ui` skill to run the complete UI test plan.
 3. Stop at the first failing test and report its console input, actual output, and expected output. Do not alter expected output merely to make the implementation pass.
 
+## JUnit testing
+
+Maintain JUnit tests for approximately the top 50% highest-value methods in the codebase. Prioritize complex methods, core behavior, and critical business logic over trivial getters, setters, and one-line delegations.
+
+After every code change, review and update the JUnit tests as needed to keep the test suite compliant with this 50% method-coverage target. Run the complete JUnit suite with `./gradlew test` and resolve any failures before considering the change complete.
+
 ## Git
 
 Use lightweight tags unless the user requests an annotated tag.
