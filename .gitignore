@@ -8,7 +8,7 @@
 /build/
 src/main/resources/docs/
 
-# Maven build files
+# Legacy Maven build files
 /target/
 
 # Runtime task data

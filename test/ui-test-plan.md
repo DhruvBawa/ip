@@ -3,7 +3,7 @@
 ## Configuration
 
 Program command: `bash test/run-ui-test.sh`
-Build command: `mvn -q compile`
+Build command: `./gradlew -q classes`
 Output starts after line: `             ██████████████████████████████████████`
 
 ## Test Case: Add and display typed tasks
