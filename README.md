@@ -16,6 +16,27 @@ The first command compiles the project and runs its automated tests. The second
 command starts Larry. Gradle downloads the project's declared Gradle version on
 the first run and reuses it afterwards.
 
+## Creating and running a fat JAR
+
+Create a fresh fat JAR with the Shadow plugin from the project root:
+
+```bash
+./gradlew clean shadowJar
+```
+
+The generated file is `build/libs/larry.jar`. It contains Larry's compiled
+classes and all runtime dependencies, and its manifest identifies `larry.Larry`
+as the entry point.
+
+Run the JAR using Java 25:
+
+```bash
+java -jar build/libs/larry.jar
+```
+
+Larry reads and writes `data/larry.txt` relative to the directory where this
+command is run. Enter `bye` to exit the application.
+
 ## Setting up in Intellij
 
 Prerequisites: JDK 25, update Intellij to the most recent version.

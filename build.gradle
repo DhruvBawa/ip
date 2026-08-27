@@ -48,7 +48,11 @@ jar {
 }
 
 shadowJar {
+    // Produce one runnable JAR containing Larry and all runtime dependencies.
     archiveFileName = 'larry.jar'
+    manifest {
+        attributes 'Main-Class': application.mainClass.get()
+    }
 }
 
 run {
