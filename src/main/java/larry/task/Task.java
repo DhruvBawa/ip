@@ -6,8 +6,8 @@ import java.time.LocalDate;
  * Represents a task and its completion state.
  */
 public class Task {
-    protected String description;
-    protected boolean isDone;
+    private String description;
+    private boolean isDone;
 
     /**
      * Creates an incomplete task with the given description.
