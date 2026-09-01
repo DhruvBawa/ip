@@ -1,6 +1,5 @@
 package larry.task;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -20,11 +19,9 @@ class EventTest {
                 LocalDateTime.of(2026, 9, 5, 9, 0),
                 LocalDateTime.of(2026, 9, 7, 17, 0));
 
-        assertAll(
-                () -> assertTrue(event.occursOn(LocalDate.of(2026, 9, 5))),
-                () -> assertTrue(event.occursOn(LocalDate.of(2026, 9, 6))),
-                () -> assertTrue(event.occursOn(LocalDate.of(2026, 9, 7)))
-        );
+        assertTrue(event.occursOn(LocalDate.of(2026, 9, 5)));
+        assertTrue(event.occursOn(LocalDate.of(2026, 9, 6)));
+        assertTrue(event.occursOn(LocalDate.of(2026, 9, 7)));
     }
 
     @Test
@@ -33,10 +30,8 @@ class EventTest {
                 LocalDateTime.of(2026, 9, 5, 9, 0),
                 LocalDateTime.of(2026, 9, 7, 17, 0));
 
-        assertAll(
-                () -> assertFalse(event.occursOn(LocalDate.of(2026, 9, 4))),
-                () -> assertFalse(event.occursOn(LocalDate.of(2026, 9, 8)))
-        );
+        assertFalse(event.occursOn(LocalDate.of(2026, 9, 4)));
+        assertFalse(event.occursOn(LocalDate.of(2026, 9, 8)));
     }
 
     @Test
@@ -45,11 +40,9 @@ class EventTest {
                 LocalDateTime.of(2026, 9, 6, 9, 0),
                 LocalDateTime.of(2026, 9, 6, 10, 0));
 
-        assertAll(
-                () -> assertFalse(event.occursOn(LocalDate.of(2026, 9, 5))),
-                () -> assertTrue(event.occursOn(LocalDate.of(2026, 9, 6))),
-                () -> assertFalse(event.occursOn(LocalDate.of(2026, 9, 7)))
-        );
+        assertFalse(event.occursOn(LocalDate.of(2026, 9, 5)));
+        assertTrue(event.occursOn(LocalDate.of(2026, 9, 6)));
+        assertFalse(event.occursOn(LocalDate.of(2026, 9, 7)));
     }
 
     @Test
@@ -59,10 +52,8 @@ class EventTest {
         Event legacyStartEvent = new Event("meeting", legacyDateTime, parsedDateTime);
         Event legacyEndEvent = new Event("meeting", parsedDateTime, legacyDateTime);
 
-        assertAll(
-                () -> assertFalse(legacyStartEvent.occursOn(LocalDate.of(2026, 9, 6))),
-                () -> assertFalse(legacyEndEvent.occursOn(LocalDate.of(2026, 9, 6)))
-        );
+        assertFalse(legacyStartEvent.occursOn(LocalDate.of(2026, 9, 6)));
+        assertFalse(legacyEndEvent.occursOn(LocalDate.of(2026, 9, 6)));
     }
 
     @Test

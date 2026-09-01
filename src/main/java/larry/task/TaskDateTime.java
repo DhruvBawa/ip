@@ -107,7 +107,7 @@ public final class TaskDateTime {
      */
     public static LocalDate parseDate(String input) {
         Objects.requireNonNull(input, "input");
-        return parseDate(input.trim(), getCurrentDate(), input);
+        return parseDateWithCurrentYear(input.trim(), getCurrentDate(), input);
     }
 
     /**
@@ -163,11 +163,11 @@ public final class TaskDateTime {
         }
 
         if (isDate(parts[0]) && isTime(parts[1])) {
-            return LocalDateTime.of(parseDate(parts[0], currentDate, input),
+            return LocalDateTime.of(parseDateWithCurrentYear(parts[0], currentDate, input),
                     parseTime(parts[1], input));
         }
         if (isTime(parts[0]) && isDate(parts[1])) {
-            return LocalDateTime.of(parseDate(parts[1], currentDate, input),
+            return LocalDateTime.of(parseDateWithCurrentYear(parts[1], currentDate, input),
                     parseTime(parts[0], input));
         }
         throw invalidInput(input);
@@ -181,7 +181,8 @@ public final class TaskDateTime {
      * @param fullInput Full input used in parse errors.
      * @return Parsed date.
      */
-    private static LocalDate parseDate(String dateText, LocalDate currentDate, String fullInput) {
+    private static LocalDate parseDateWithCurrentYear(String dateText, LocalDate currentDate,
+            String fullInput) {
         String normalizedDate = dateText.replace('/', '-');
         if (dateText.matches("\\d{1,2}[-/]\\d{1,2}")) {
             normalizedDate += "-" + currentDate.getYear();
