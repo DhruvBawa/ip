@@ -1,6 +1,5 @@
 package larry.storage;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -37,10 +36,8 @@ class StorageTest {
 
         TaskList loadedTasks = storage.loadTasks();
 
-        assertAll(
-                () -> assertEquals(0, loadedTasks.size()),
-                () -> assertEquals(List.of(), storage.getLoadWarnings())
-        );
+        assertEquals(0, loadedTasks.size());
+        assertEquals(List.of(), storage.getLoadWarnings());
     }
 
     @Test
@@ -64,18 +61,16 @@ class StorageTest {
         TaskList loadedTasks = storage.loadTasks();
         List<String> storedLines = Files.readAllLines(dataFile, StandardCharsets.UTF_8);
 
-        assertAll(
-                () -> assertEquals(List.of(
-                        "T | 1 | read \\| book \\\\ notes",
-                        "D | 0 | return \\| book | 2026-06-06T18:00:30",
-                        "E | 1 | meeting \\\\ team | 2026-08-06T14:00:15 | 2026-08-06T16:00:45"
-                ), storedLines),
-                () -> assertEquals(3, loadedTasks.size()),
-                () -> assertLoadedTodo(loadedTasks.get(0)),
-                () -> assertLoadedDeadline(loadedTasks.get(1)),
-                () -> assertLoadedEvent(loadedTasks.get(2)),
-                () -> assertEquals(List.of(), storage.getLoadWarnings())
-        );
+        assertEquals(List.of(
+                "T | 1 | read \\| book \\\\ notes",
+                "D | 0 | return \\| book | 2026-06-06T18:00:30",
+                "E | 1 | meeting \\\\ team | 2026-08-06T14:00:15 | 2026-08-06T16:00:45"
+        ), storedLines);
+        assertEquals(3, loadedTasks.size());
+        assertLoadedTodo(loadedTasks.get(0));
+        assertLoadedDeadline(loadedTasks.get(1));
+        assertLoadedEvent(loadedTasks.get(2));
+        assertEquals(List.of(), storage.getLoadWarnings());
     }
 
     @Test
@@ -95,22 +90,20 @@ class StorageTest {
         TaskList loadedTasks = storage.loadTasks();
         List<String> warnings = storage.getLoadWarnings();
 
-        assertAll(
-                () -> assertEquals(2, loadedTasks.size()),
-                () -> assertEquals("valid todo", loadedTasks.get(0).getDescription()),
-                () -> assertFalse(loadedTasks.get(0).isDone()),
-                () -> assertEquals("valid done todo", loadedTasks.get(1).getDescription()),
-                () -> assertTrue(loadedTasks.get(1).isDone()),
-                () -> assertEquals(List.of(
-                        "WARNING: Skipping invalid task data at line 3: unknown task type 'X'",
-                        "WARNING: Skipping invalid task data at line 4: status must be 0 or 1",
-                        "WARNING: Skipping invalid task data at line 5: "
-                                + "wrong number of fields for task type D",
-                        "WARNING: Skipping invalid task data at line 6: task details cannot be blank"
-                ), warnings),
-                () -> assertThrows(UnsupportedOperationException.class,
-                        () -> warnings.add("unexpected warning"))
-        );
+        assertEquals(2, loadedTasks.size());
+        assertEquals("valid todo", loadedTasks.get(0).getDescription());
+        assertFalse(loadedTasks.get(0).isDone());
+        assertEquals("valid done todo", loadedTasks.get(1).getDescription());
+        assertTrue(loadedTasks.get(1).isDone());
+        assertEquals(List.of(
+                "WARNING: Skipping invalid task data at line 3: unknown task type 'X'",
+                "WARNING: Skipping invalid task data at line 4: status must be 0 or 1",
+                "WARNING: Skipping invalid task data at line 5: "
+                        + "wrong number of fields for task type D",
+                "WARNING: Skipping invalid task data at line 6: task details cannot be blank"
+        ), warnings);
+        assertThrows(UnsupportedOperationException.class, () ->
+                warnings.add("unexpected warning"));
     }
 
     @Test
@@ -129,10 +122,8 @@ class StorageTest {
         TaskList recoveredTasks = storage.loadTasks();
         storage.saveTasks(recoveredTasks);
 
-        assertAll(
-                () -> assertEquals(1, recoveredTasks.size()),
-                () -> assertEquals("recovered task", recoveredTasks.get(0).getDescription())
-        );
+        assertEquals(1, recoveredTasks.size());
+        assertEquals("recovered task", recoveredTasks.get(0).getDescription());
     }
 
     @Test
@@ -144,41 +135,33 @@ class StorageTest {
 
         storage.saveTasks(tasks);
 
-        assertAll(
-                () -> assertTrue(Files.isDirectory(dataFile.getParent())),
-                () -> assertTrue(Files.isRegularFile(dataFile)),
-                () -> assertEquals(List.of("T | 0 | read book"),
-                        Files.readAllLines(dataFile, StandardCharsets.UTF_8))
-        );
+        assertTrue(Files.isDirectory(dataFile.getParent()));
+        assertTrue(Files.isRegularFile(dataFile));
+        assertEquals(List.of("T | 0 | read book"),
+                Files.readAllLines(dataFile, StandardCharsets.UTF_8));
     }
 
     private static void assertLoadedTodo(Task task) {
         Todo todo = assertInstanceOf(Todo.class, task);
-        assertAll(
-                () -> assertEquals("read | book \\ notes", todo.getDescription()),
-                () -> assertTrue(todo.isDone())
-        );
+        assertEquals("read | book \\ notes", todo.getDescription());
+        assertTrue(todo.isDone());
     }
 
     private static void assertLoadedDeadline(Task task) {
         Deadline deadline = assertInstanceOf(Deadline.class, task);
-        assertAll(
-                () -> assertEquals("return | book", deadline.getDescription()),
-                () -> assertFalse(deadline.isDone()),
-                () -> assertEquals(Optional.of(LocalDateTime.of(2026, 6, 6, 18, 0, 30)),
-                        deadline.getDueDateTime().getValue())
-        );
+        assertEquals("return | book", deadline.getDescription());
+        assertFalse(deadline.isDone());
+        assertEquals(Optional.of(LocalDateTime.of(2026, 6, 6, 18, 0, 30)),
+                deadline.getDueDateTime().getValue());
     }
 
     private static void assertLoadedEvent(Task task) {
         Event event = assertInstanceOf(Event.class, task);
-        assertAll(
-                () -> assertEquals("meeting \\ team", event.getDescription()),
-                () -> assertTrue(event.isDone()),
-                () -> assertEquals(Optional.of(LocalDateTime.of(2026, 8, 6, 14, 0, 15)),
-                        event.getStartDateTime().getValue()),
-                () -> assertEquals(Optional.of(LocalDateTime.of(2026, 8, 6, 16, 0, 45)),
-                        event.getEndDateTime().getValue())
-        );
+        assertEquals("meeting \\ team", event.getDescription());
+        assertTrue(event.isDone());
+        assertEquals(Optional.of(LocalDateTime.of(2026, 8, 6, 14, 0, 15)),
+                event.getStartDateTime().getValue());
+        assertEquals(Optional.of(LocalDateTime.of(2026, 8, 6, 16, 0, 45)),
+                event.getEndDateTime().getValue());
     }
 }
