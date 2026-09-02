@@ -3,6 +3,7 @@ package larry.ui;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
+import java.util.function.Consumer;
 
 import larry.task.Task;
 import larry.task.TaskDateTime;
@@ -54,12 +55,28 @@ public class Ui implements AutoCloseable {
                     """;
 
     private final Scanner scanner;
+    private final Consumer<String> output;
+    private final Consumer<String> errorOutput;
 
     /**
      * Creates a console UI that reads from standard input.
      */
     public Ui() {
         this.scanner = new Scanner(System.in);
+        this.output = System.out::println;
+        this.errorOutput = System.err::println;
+    }
+
+    /**
+     * Creates a UI that sends output to the supplied destinations without reading console input.
+     *
+     * @param output Destination for normal output lines.
+     * @param errorOutput Destination for warning and error output lines.
+     */
+    public Ui(Consumer<String> output, Consumer<String> errorOutput) {
+        this.scanner = null;
+        this.output = output;
+        this.errorOutput = errorOutput;
     }
 
     /**
@@ -68,6 +85,9 @@ public class Ui implements AutoCloseable {
      * @return True when another command can be read.
      */
     public boolean hasNextCommand() {
+        if (scanner == null) {
+            return false;
+        }
         return scanner.hasNextLine();
     }
 
@@ -77,6 +97,9 @@ public class Ui implements AutoCloseable {
      * @return Next command entered by the user.
      */
     public String readCommand() {
+        if (scanner == null) {
+            throw new IllegalStateException("This UI does not read console input.");
+        }
         return scanner.nextLine();
     }
 
@@ -84,9 +107,9 @@ public class Ui implements AutoCloseable {
      * Displays Larry's banner and greeting.
      */
     public void showWelcome() {
-        System.out.println(SEPARATOR + "\n");
-        System.out.println(BANNER);
-        System.out.println("I'm EVIL LARRY.\nWhat do you want to do?");
+        output.accept(SEPARATOR + "\n");
+        output.accept(BANNER);
+        output.accept("I'm EVIL LARRY.\nWhat do you want to do?");
         showSeparator();
     }
 
@@ -94,14 +117,14 @@ public class Ui implements AutoCloseable {
      * Displays a separator between interactions.
      */
     public void showSeparator() {
-        System.out.println(SEPARATOR);
+        output.accept(SEPARATOR);
     }
 
     /**
      * Displays Larry's farewell message.
      */
     public void showGoodbye() {
-        System.out.println(INIT_SPACE + "EVIL LARRY has decided to let you go\n     FOR NOW...");
+        output.accept(INIT_SPACE + "EVIL LARRY has decided to let you go\n     FOR NOW...");
     }
 
     /**
@@ -110,9 +133,9 @@ public class Ui implements AutoCloseable {
      * @param tasks Tasks to display.
      */
     public void showTasks(TaskList tasks) {
-        System.out.println(INIT_SPACE + "Here are the tasks EVIL LARRY says are in your list:");
+        output.accept(INIT_SPACE + "Here are the tasks EVIL LARRY says are in your list:");
         for (int i = 0; i < tasks.size(); i++) {
-            System.out.println("     " + (i + 1) + "." + tasks.get(i));
+            output.accept("     " + (i + 1) + "." + tasks.get(i));
         }
     }
 
@@ -122,9 +145,9 @@ public class Ui implements AutoCloseable {
      * @param matchingTasks Tasks to display.
      */
     public void showMatchingTasks(List<Task> matchingTasks) {
-        System.out.println(INIT_SPACE + "Here are the matching tasks in your list:");
+        output.accept(INIT_SPACE + "Here are the matching tasks in your list:");
         for (int i = 0; i < matchingTasks.size(); i++) {
-            System.out.println("     " + (i + 1) + "." + matchingTasks.get(i));
+            output.accept("     " + (i + 1) + "." + matchingTasks.get(i));
         }
     }
 
@@ -135,12 +158,12 @@ public class Ui implements AutoCloseable {
      * @param tasks Tasks to search and display.
      */
     public void showTasksOnDate(LocalDate date, TaskList tasks) {
-        System.out.println(INIT_SPACE + "EVIL LARRY says these tasks occur on "
+        output.accept(INIT_SPACE + "EVIL LARRY says these tasks occur on "
                 + TaskDateTime.formatDate(date) + ":");
         for (int i = 0; i < tasks.size(); i++) {
             Task task = tasks.get(i);
             if (task.occursOn(date)) {
-                System.out.println("     " + (i + 1) + "." + task);
+                output.accept("     " + (i + 1) + "." + task);
             }
         }
     }
@@ -151,8 +174,8 @@ public class Ui implements AutoCloseable {
      * @param task Task that was marked.
      */
     public void showTaskMarked(Task task) {
-        System.out.println(INIT_SPACE + "EVIL LARRY has marked this task as done:");
-        System.out.println(PRE_TASK_SPACE + task);
+        output.accept(INIT_SPACE + "EVIL LARRY has marked this task as done:");
+        output.accept(PRE_TASK_SPACE + task);
     }
 
     /**
@@ -161,8 +184,8 @@ public class Ui implements AutoCloseable {
      * @param task Task that was unmarked.
      */
     public void showTaskUnmarked(Task task) {
-        System.out.println(INIT_SPACE + "EVIL LARRY has marked this task as not done yet:");
-        System.out.println(PRE_TASK_SPACE + task);
+        output.accept(INIT_SPACE + "EVIL LARRY has marked this task as not done yet:");
+        output.accept(PRE_TASK_SPACE + task);
     }
 
     /**
@@ -172,8 +195,8 @@ public class Ui implements AutoCloseable {
      * @param taskCount Number of remaining tasks.
      */
     public void showTaskDeleted(Task task, int taskCount) {
-        System.out.println(INIT_SPACE + "EVIL LARRY removed this task:");
-        System.out.println(PRE_TASK_SPACE + task);
+        output.accept(INIT_SPACE + "EVIL LARRY removed this task:");
+        output.accept(PRE_TASK_SPACE + task);
         showTaskCount(taskCount);
     }
 
@@ -184,8 +207,8 @@ public class Ui implements AutoCloseable {
      * @param taskCount Number of stored tasks.
      */
     public void showTaskAdded(Task task, int taskCount) {
-        System.out.println(INIT_SPACE + "EVIL LARRY has added this task for you:");
-        System.out.println(PRE_TASK_SPACE + task);
+        output.accept(INIT_SPACE + "EVIL LARRY has added this task for you:");
+        output.accept(PRE_TASK_SPACE + task);
         showTaskCount(taskCount);
     }
 
@@ -195,7 +218,7 @@ public class Ui implements AutoCloseable {
      * @param message Error message to display.
      */
     public void showError(String message) {
-        System.out.println(INIT_SPACE + message);
+        output.accept(INIT_SPACE + message);
     }
 
     /**
@@ -204,7 +227,7 @@ public class Ui implements AutoCloseable {
      * @param message Warning message to display.
      */
     public void showWarning(String message) {
-        System.err.println(message);
+        errorOutput.accept(message);
     }
 
     /**
@@ -213,7 +236,7 @@ public class Ui implements AutoCloseable {
      * @param errorMessage Cause of the loading failure.
      */
     public void showLoadingError(String errorMessage) {
-        System.err.println("WARNING: EVIL LARRY could not read the task data file. "
+        errorOutput.accept("WARNING: EVIL LARRY could not read the task data file. "
                 + "Starting with an empty task list. " + errorMessage);
     }
 
@@ -223,7 +246,7 @@ public class Ui implements AutoCloseable {
      * @param errorMessage Cause of the saving failure.
      */
     public void showSavingError(String errorMessage) {
-        System.err.println("WARNING: EVIL LARRY could not save the task data file. "
+        errorOutput.accept("WARNING: EVIL LARRY could not save the task data file. "
                 + "The latest change is available only in this session. " + errorMessage);
     }
 
@@ -232,7 +255,9 @@ public class Ui implements AutoCloseable {
      */
     @Override
     public void close() {
-        scanner.close();
+        if (scanner != null) {
+            scanner.close();
+        }
     }
 
     /**
@@ -242,7 +267,7 @@ public class Ui implements AutoCloseable {
      */
     private void showTaskCount(int taskCount) {
         String taskWord = taskCount == 1 ? "task" : "tasks";
-        System.out.println(INIT_SPACE + "EVIL LARRY says you have " + taskCount + " "
+        output.accept(INIT_SPACE + "EVIL LARRY says you have " + taskCount + " "
                 + taskWord + " in the list.");
     }
 }
