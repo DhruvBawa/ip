@@ -1,6 +1,5 @@
 package larry.task;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -69,20 +68,18 @@ class TaskDateTimeTest {
 
     @Test
     void constructor_invalidInput_exceptionThrown() {
-        assertAll(
-                () -> assertThrows(DateTimeParseException.class,
-                        () -> new TaskDateTime("")),
-                () -> assertThrows(DateTimeParseException.class,
-                        () -> new TaskDateTime("6-8-2026")),
-                () -> assertThrows(DateTimeParseException.class,
-                        () -> new TaskDateTime("1400 1500")),
-                () -> assertThrows(DateTimeParseException.class,
-                        () -> new TaskDateTime("6-8-2026 1400 extra")),
-                () -> assertThrows(DateTimeParseException.class,
-                        () -> new TaskDateTime("24:00")),
-                () -> assertThrows(DateTimeParseException.class,
-                        () -> new TaskDateTime("1260"))
-        );
+        assertThrows(DateTimeParseException.class, () ->
+                new TaskDateTime(""));
+        assertThrows(DateTimeParseException.class, () ->
+                new TaskDateTime("6-8-2026"));
+        assertThrows(DateTimeParseException.class, () ->
+                new TaskDateTime("1400 1500"));
+        assertThrows(DateTimeParseException.class, () ->
+                new TaskDateTime("6-8-2026 1400 extra"));
+        assertThrows(DateTimeParseException.class, () ->
+                new TaskDateTime("24:00"));
+        assertThrows(DateTimeParseException.class, () ->
+                new TaskDateTime("1260"));
     }
 
     @Test
@@ -134,10 +131,8 @@ class TaskDateTimeTest {
 
     @Test
     void parseDate_dateWithoutYear_currentYearUsed() {
-        assertAll(
-                () -> assertEquals(LocalDate.of(2026, 9, 7), TaskDateTime.parseDate("7-9")),
-                () -> assertEquals(LocalDate.of(2026, 9, 7), TaskDateTime.parseDate("07/09"))
-        );
+        assertEquals(LocalDate.of(2026, 9, 7), TaskDateTime.parseDate("7-9"));
+        assertEquals(LocalDate.of(2026, 9, 7), TaskDateTime.parseDate("07/09"));
     }
 
     @Test
@@ -152,28 +147,24 @@ class TaskDateTimeTest {
 
     @Test
     void parseDate_invalidCalendarDate_exceptionThrown() {
-        assertAll(
-                () -> assertThrows(DateTimeParseException.class,
-                        () -> TaskDateTime.parseDate("31-4-2026")),
-                () -> assertThrows(DateTimeParseException.class,
-                        () -> TaskDateTime.parseDate("29-2-2025")),
-                () -> assertThrows(DateTimeParseException.class,
-                        () -> TaskDateTime.parseDate("1-13-2026"))
-        );
+        assertThrows(DateTimeParseException.class, () ->
+                TaskDateTime.parseDate("31-4-2026"));
+        assertThrows(DateTimeParseException.class, () ->
+                TaskDateTime.parseDate("29-2-2025"));
+        assertThrows(DateTimeParseException.class, () ->
+                TaskDateTime.parseDate("1-13-2026"));
     }
 
     @Test
     void parseDate_unsupportedFormat_exceptionThrown() {
-        assertAll(
-                () -> assertThrows(DateTimeParseException.class,
-                        () -> TaskDateTime.parseDate("2026-06-06")),
-                () -> assertThrows(DateTimeParseException.class,
-                        () -> TaskDateTime.parseDate("6-6-26")),
-                () -> assertThrows(DateTimeParseException.class,
-                        () -> TaskDateTime.parseDate("tomorrow")),
-                () -> assertThrows(DateTimeParseException.class,
-                        () -> TaskDateTime.parseDate(""))
-        );
+        assertThrows(DateTimeParseException.class, () ->
+                TaskDateTime.parseDate("2026-06-06"));
+        assertThrows(DateTimeParseException.class, () ->
+                TaskDateTime.parseDate("6-6-26"));
+        assertThrows(DateTimeParseException.class, () ->
+                TaskDateTime.parseDate("tomorrow"));
+        assertThrows(DateTimeParseException.class, () ->
+                TaskDateTime.parseDate(""));
     }
 
     @Test
@@ -195,11 +186,9 @@ class TaskDateTimeTest {
     void isOn_sameAndDifferentDates_expectedBooleanReturned() {
         TaskDateTime taskDateTime = new TaskDateTime(LocalDateTime.of(2026, 8, 6, 14, 0));
 
-        assertAll(
-                () -> assertTrue(taskDateTime.isOn(LocalDate.of(2026, 8, 6))),
-                () -> assertFalse(taskDateTime.isOn(LocalDate.of(2026, 8, 5))),
-                () -> assertFalse(taskDateTime.isOn(LocalDate.of(2026, 8, 7)))
-        );
+        assertTrue(taskDateTime.isOn(LocalDate.of(2026, 8, 6)));
+        assertFalse(taskDateTime.isOn(LocalDate.of(2026, 8, 5)));
+        assertFalse(taskDateTime.isOn(LocalDate.of(2026, 8, 7)));
     }
 
     @Test
@@ -232,14 +221,12 @@ class TaskDateTimeTest {
 
     @Test
     void toString_parsedValue_userFriendlyTextReturned() {
-        assertAll(
-                () -> assertEquals("6 Aug 2026, 6:00 PM",
-                        new TaskDateTime(LocalDateTime.of(2026, 8, 6, 18, 0)).toString()),
-                () -> assertEquals("6 Aug 2026, 12:00 AM",
-                        new TaskDateTime(LocalDateTime.of(2026, 8, 6, 0, 0)).toString()),
-                () -> assertEquals("6 Aug 2026, 12:00 PM",
-                        new TaskDateTime(LocalDateTime.of(2026, 8, 6, 12, 0)).toString())
-        );
+        assertEquals("6 Aug 2026, 6:00 PM",
+                new TaskDateTime(LocalDateTime.of(2026, 8, 6, 18, 0)).toString());
+        assertEquals("6 Aug 2026, 12:00 AM",
+                new TaskDateTime(LocalDateTime.of(2026, 8, 6, 0, 0)).toString());
+        assertEquals("6 Aug 2026, 12:00 PM",
+                new TaskDateTime(LocalDateTime.of(2026, 8, 6, 12, 0)).toString());
     }
 
     @Test
