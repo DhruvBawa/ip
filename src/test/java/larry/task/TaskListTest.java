@@ -1,6 +1,5 @@
 package larry.task;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -36,12 +35,10 @@ class TaskListTest {
     void findByDescription_matchingSubstring_matchesInOriginalOrderIgnoringCase() {
         List<Task> matchingTasks = tasks.findByDescription("BOOK");
 
-        assertAll(
-                () -> assertEquals(3, matchingTasks.size()),
-                () -> assertSame(readBook, matchingTasks.get(0)),
-                () -> assertSame(returnBook, matchingTasks.get(1)),
-                () -> assertSame(buyNotebook, matchingTasks.get(2))
-        );
+        assertEquals(3, matchingTasks.size());
+        assertSame(readBook, matchingTasks.get(0));
+        assertSame(returnBook, matchingTasks.get(1));
+        assertSame(buyNotebook, matchingTasks.get(2));
     }
 
     @Test
