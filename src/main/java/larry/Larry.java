@@ -2,6 +2,7 @@ package larry;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 
 import larry.command.Command;
 import larry.exception.LarryException;
@@ -19,6 +20,14 @@ public class Larry {
     private final Storage storage;
     private final TaskList tasks;
     private final Ui ui;
+    private String commandType;
+
+    /**
+     * Creates Larry using the default task data path.
+     */
+    public Larry() {
+        this(DATA_FILE_PATH);
+    }
 
     /**
      * Creates Larry with storage at the specified path and loads the saved tasks.
@@ -29,6 +38,7 @@ public class Larry {
         this.ui = new Ui();
         this.storage = new Storage(dataFilePath);
         this.tasks = loadTasks();
+        this.commandType = "";
     }
 
     /**
@@ -37,7 +47,38 @@ public class Larry {
      * @param args Command-line arguments; not used.
      */
     public static void main(String[] args) {
-        new Larry(DATA_FILE_PATH).run();
+        new Larry().run();
+    }
+
+    /**
+     * Executes one command and returns the response for a graphical interface.
+     *
+     * @param input Command entered by the user.
+     * @return Larry's response without console separators.
+     */
+    public String getResponse(String input) {
+        ArrayList<String> responseLines = new ArrayList<>();
+        Ui responseUi = new Ui(responseLines::add, responseLines::add);
+
+        try {
+            Command command = Parser.parseCommand(input);
+            command.execute(tasks, responseUi, storage);
+            commandType = command.getClass().getSimpleName();
+        } catch (LarryException e) {
+            commandType = "Error";
+            responseUi.showError(e.getMessage());
+        }
+
+        return String.join(System.lineSeparator(), responseLines).strip();
+    }
+
+    /**
+     * Returns the type of the most recently processed command for response styling.
+     *
+     * @return Simple command class name, or {@code Error} after invalid input.
+     */
+    public String getCommandType() {
+        return commandType;
     }
 
     /**
