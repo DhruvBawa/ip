@@ -204,6 +204,7 @@ public class Parser {
      * @throws LarryException If the argument is empty.
      */
     private static String requireArgument(String command, String keyword) throws LarryException {
+        assert isCommand(command, keyword) : "Command must start with the expected keyword";
         String argument = command.substring(keyword.length()).trim();
         if (argument.isEmpty()) {
             throw new LarryException();

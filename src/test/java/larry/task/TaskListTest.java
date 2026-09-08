@@ -65,4 +65,21 @@ class TaskListTest {
     void findByDescription_nullKeyword_nullPointerExceptionThrown() {
         assertThrows(NullPointerException.class, () -> tasks.findByDescription(null));
     }
+
+    @Test
+    void add_nullTask_assertionErrorThrown() {
+        assertThrows(AssertionError.class, () -> tasks.add(null));
+    }
+
+    @Test
+    void get_invalidIndex_assertionErrorThrown() {
+        assertThrows(AssertionError.class, () -> tasks.get(-1));
+        assertThrows(AssertionError.class, () -> tasks.get(tasks.size()));
+    }
+
+    @Test
+    void delete_invalidIndex_assertionErrorThrown() {
+        assertThrows(AssertionError.class, () -> tasks.delete(-1));
+        assertThrows(AssertionError.class, () -> tasks.delete(tasks.size()));
+    }
 }

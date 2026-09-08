@@ -280,6 +280,8 @@ public class Storage {
      * @return One line containing the task type, status, and details.
      */
     private String serialize(Task task) {
+        assert task instanceof Todo || task instanceof Deadline || task instanceof Event
+                : "Only supported task types can be serialized";
         String status = task.isDone() ? "1" : "0";
         if (task instanceof Deadline deadline) {
             return "D | " + status + " | " + escape(task.getDescription()) + " | "
