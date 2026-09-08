@@ -144,7 +144,22 @@ public class Storage {
      * @throws IllegalArgumentException If the line contains invalid task data.
      */
     private Task deserialize(String line) {
-        ArrayList<String> fields = parseFields(line);
+        List<String> fields = parseFields(line);
+        validateTaskFields(fields);
+        Task task = createTask(fields);
+        if (fields.get(1).equals("1")) {
+            task.markAsDone();
+        }
+        return task;
+    }
+
+    /**
+     * Validates the structure and required values of a serialized task record.
+     *
+     * @param fields Unescaped fields from a serialized task record.
+     * @throws IllegalArgumentException If the fields do not form a valid task record.
+     */
+    private void validateTaskFields(List<String> fields) {
         if (fields.size() < 2) {
             throw new IllegalArgumentException("missing task type or status");
         }
@@ -169,8 +184,16 @@ public class Storage {
                 throw new IllegalArgumentException("task details cannot be blank");
             }
         }
+    }
 
-        Task task = switch (taskType) {
+    /**
+     * Constructs a task from fields that have already passed record validation.
+     *
+     * @param fields Validated fields from a serialized task record.
+     * @return Task represented by the fields.
+     */
+    private Task createTask(List<String> fields) {
+        return switch (fields.get(0)) {
             case "T" -> new Todo(fields.get(2));
             case "D" -> new Deadline(fields.get(2),
                     TaskDateTime.fromStorageString(fields.get(3)));
@@ -179,10 +202,6 @@ public class Storage {
                     TaskDateTime.fromStorageString(fields.get(4)));
             default -> throw new AssertionError("Task type was already validated");
         };
-        if (status.equals("1")) {
-            task.markAsDone();
-        }
-        return task;
     }
 
     /**
