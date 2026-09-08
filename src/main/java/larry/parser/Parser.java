@@ -85,47 +85,69 @@ public class Parser {
         }
 
         if (isCommand(command, "deadline")) {
-            String arguments = requireArgument(command, "deadline");
-            int byPosition = arguments.indexOf(" /by ");
-            if (byPosition <= 0 || byPosition + 5 >= arguments.length()) {
-                throw new LarryException();
-            }
-
-            String description = arguments.substring(0, byPosition).trim();
-            String dueDate = arguments.substring(byPosition + 5).trim();
-            if (description.isEmpty() || dueDate.isEmpty()) {
-                throw new LarryException();
-            }
-            try {
-                return new Deadline(description, dueDate);
-            } catch (DateTimeParseException e) {
-                throw new LarryException();
-            }
+            return parseDeadline(command);
         }
 
         if (isCommand(command, "event")) {
-            String arguments = requireArgument(command, "event");
-            int fromPosition = arguments.indexOf(" /from ");
-            int toPosition = arguments.indexOf(" /to ", fromPosition + 7);
-            if (fromPosition <= 0 || toPosition <= fromPosition + 7
-                    || toPosition + 5 >= arguments.length()) {
-                throw new LarryException();
-            }
-
-            String description = arguments.substring(0, fromPosition).trim();
-            String startTime = arguments.substring(fromPosition + 7, toPosition).trim();
-            String endTime = arguments.substring(toPosition + 5).trim();
-            if (description.isEmpty() || startTime.isEmpty() || endTime.isEmpty()) {
-                throw new LarryException();
-            }
-            try {
-                return new Event(description, startTime, endTime);
-            } catch (DateTimeParseException e) {
-                throw new LarryException();
-            }
+            return parseEvent(command);
         }
 
         throw new LarryException();
+    }
+
+    /**
+     * Parses a deadline command and validates its description and due date.
+     *
+     * @param command Full deadline command.
+     * @return Deadline represented by the command.
+     * @throws LarryException If a required field or the due date is invalid.
+     */
+    private static Deadline parseDeadline(String command) throws LarryException {
+        String arguments = requireArgument(command, "deadline");
+        int byPosition = arguments.indexOf(" /by ");
+        if (byPosition <= 0 || byPosition + 5 >= arguments.length()) {
+            throw new LarryException();
+        }
+
+        String description = arguments.substring(0, byPosition).trim();
+        String dueDate = arguments.substring(byPosition + 5).trim();
+        if (description.isEmpty() || dueDate.isEmpty()) {
+            throw new LarryException();
+        }
+        try {
+            return new Deadline(description, dueDate);
+        } catch (DateTimeParseException e) {
+            throw new LarryException();
+        }
+    }
+
+    /**
+     * Parses an event command and validates its description, start time, and end time.
+     *
+     * @param command Full event command.
+     * @return Event represented by the command.
+     * @throws LarryException If a required field or either date and time is invalid.
+     */
+    private static Event parseEvent(String command) throws LarryException {
+        String arguments = requireArgument(command, "event");
+        int fromPosition = arguments.indexOf(" /from ");
+        int toPosition = arguments.indexOf(" /to ", fromPosition + 7);
+        if (fromPosition <= 0 || toPosition <= fromPosition + 7
+                || toPosition + 5 >= arguments.length()) {
+            throw new LarryException();
+        }
+
+        String description = arguments.substring(0, fromPosition).trim();
+        String startTime = arguments.substring(fromPosition + 7, toPosition).trim();
+        String endTime = arguments.substring(toPosition + 5).trim();
+        if (description.isEmpty() || startTime.isEmpty() || endTime.isEmpty()) {
+            throw new LarryException();
+        }
+        try {
+            return new Event(description, startTime, endTime);
+        } catch (DateTimeParseException e) {
+            throw new LarryException();
+        }
     }
 
     /**
