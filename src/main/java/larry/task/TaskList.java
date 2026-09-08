@@ -26,6 +26,7 @@ public class TaskList implements Iterable<Task> {
      * @param task Task to add.
      */
     public void add(Task task) {
+        assert task != null : "Task list cannot contain null tasks";
         tasks.add(task);
     }
 
@@ -36,6 +37,7 @@ public class TaskList implements Iterable<Task> {
      * @return Deleted task.
      */
     public Task delete(int taskIndex) {
+        assert isValidTaskIndex(taskIndex) : "Task index must identify an existing task";
         return tasks.remove(taskIndex);
     }
 
@@ -46,6 +48,7 @@ public class TaskList implements Iterable<Task> {
      * @return Task at the specified index.
      */
     public Task get(int taskIndex) {
+        assert isValidTaskIndex(taskIndex) : "Task index must identify an existing task";
         return tasks.get(taskIndex);
     }
 
@@ -81,5 +84,9 @@ public class TaskList implements Iterable<Task> {
     @Override
     public Iterator<Task> iterator() {
         return Collections.unmodifiableList(tasks).iterator();
+    }
+
+    private boolean isValidTaskIndex(int taskIndex) {
+        return taskIndex >= 0 && taskIndex < tasks.size();
     }
 }
