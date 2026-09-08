@@ -23,6 +23,10 @@ import larry.task.Todo;
  * Parses user commands into values that Larry can act on.
  */
 public class Parser {
+    private static final String DEADLINE_SEPARATOR = " /by ";
+    private static final String EVENT_START_SEPARATOR = " /from ";
+    private static final String EVENT_END_SEPARATOR = " /to ";
+
     /**
      * Prevents construction of a utility class.
      */
@@ -104,13 +108,14 @@ public class Parser {
      */
     private static Deadline parseDeadline(String command) throws LarryException {
         String arguments = requireArgument(command, "deadline");
-        int byPosition = arguments.indexOf(" /by ");
-        if (byPosition <= 0 || byPosition + 5 >= arguments.length()) {
+        int byPosition = arguments.indexOf(DEADLINE_SEPARATOR);
+        int dueDatePosition = byPosition + DEADLINE_SEPARATOR.length();
+        if (byPosition <= 0 || dueDatePosition >= arguments.length()) {
             throw new LarryException();
         }
 
         String description = arguments.substring(0, byPosition).trim();
-        String dueDate = arguments.substring(byPosition + 5).trim();
+        String dueDate = arguments.substring(dueDatePosition).trim();
         if (description.isEmpty() || dueDate.isEmpty()) {
             throw new LarryException();
         }
@@ -130,16 +135,18 @@ public class Parser {
      */
     private static Event parseEvent(String command) throws LarryException {
         String arguments = requireArgument(command, "event");
-        int fromPosition = arguments.indexOf(" /from ");
-        int toPosition = arguments.indexOf(" /to ", fromPosition + 7);
-        if (fromPosition <= 0 || toPosition <= fromPosition + 7
-                || toPosition + 5 >= arguments.length()) {
+        int fromPosition = arguments.indexOf(EVENT_START_SEPARATOR);
+        int startTimePosition = fromPosition + EVENT_START_SEPARATOR.length();
+        int toPosition = arguments.indexOf(EVENT_END_SEPARATOR, startTimePosition);
+        int endTimePosition = toPosition + EVENT_END_SEPARATOR.length();
+        if (fromPosition <= 0 || toPosition <= startTimePosition
+                || endTimePosition >= arguments.length()) {
             throw new LarryException();
         }
 
         String description = arguments.substring(0, fromPosition).trim();
-        String startTime = arguments.substring(fromPosition + 7, toPosition).trim();
-        String endTime = arguments.substring(toPosition + 5).trim();
+        String startTime = arguments.substring(startTimePosition, toPosition).trim();
+        String endTime = arguments.substring(endTimePosition).trim();
         if (description.isEmpty() || startTime.isEmpty() || endTime.isEmpty()) {
             throw new LarryException();
         }
