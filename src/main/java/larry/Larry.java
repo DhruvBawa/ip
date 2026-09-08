@@ -69,6 +69,7 @@ public class Larry {
             responseUi.showError(e.getMessage());
         }
 
+        assert !responseLines.isEmpty() : "Every command must produce a GUI response";
         return String.join(System.lineSeparator(), responseLines).strip();
     }
 

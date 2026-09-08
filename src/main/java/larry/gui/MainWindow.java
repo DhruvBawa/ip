@@ -64,6 +64,7 @@ public class MainWindow extends AnchorPane {
      */
     @FXML
     private void handleUserInput() {
+        assert larry != null : "Larry must be set before handling user input";
         String input = userInput.getText();
         String response = larry.getResponse(input);
         String commandType = larry.getCommandType();
