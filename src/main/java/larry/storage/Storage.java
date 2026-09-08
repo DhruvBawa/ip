@@ -109,10 +109,9 @@ public class Storage {
         Path parentDirectory = absoluteFilePath.getParent();
         Files.createDirectories(parentDirectory);
 
-        ArrayList<String> taskLines = new ArrayList<>();
-        for (Task task : tasks) {
-            taskLines.add(serialize(task));
-        }
+        List<String> taskLines = tasks.stream()
+                .map(this::serialize)
+                .toList();
 
         Path temporaryFile = Files.createTempFile(parentDirectory, "tasks-", ".tmp");
         try {
