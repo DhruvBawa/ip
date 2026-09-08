@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * Stores Larry's tasks and provides operations for accessing and changing them.
@@ -56,6 +57,15 @@ public class TaskList implements Iterable<Task> {
      */
     public int size() {
         return tasks.size();
+    }
+
+    /**
+     * Returns a sequential stream of the tasks in their list order.
+     *
+     * @return Stream of the stored tasks.
+     */
+    public Stream<Task> stream() {
+        return tasks.stream();
     }
 
     /**
