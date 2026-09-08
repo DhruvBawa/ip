@@ -5,4 +5,4 @@ set -euo pipefail
 mkdir -p build/ui-test-data
 rm -f build/ui-test-data/data/larry.txt
 cd build/ui-test-data
-exec java -Dlarry.currentDate=2026-08-26 -cp ../classes/java/main larry.Larry
+exec java -ea -Dlarry.currentDate=2026-08-26 -cp ../classes/java/main larry.Larry
