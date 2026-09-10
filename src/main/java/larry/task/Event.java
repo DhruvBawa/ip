@@ -8,8 +8,8 @@ import java.util.Optional;
  * Represents a task that occurs over a specified period.
  */
 public class Event extends Task {
-    private final TaskDateTime startDateTime;
-    private final TaskDateTime endDateTime;
+    private TaskDateTime startDateTime;
+    private TaskDateTime endDateTime;
 
     /**
      * Creates an event task from start and end date-time text.
@@ -19,9 +19,7 @@ public class Event extends Task {
      * @param endTimeText End date and time text accepted by Larry.
      */
     public Event(String description, String startTimeText, String endTimeText) {
-        super(description);
-        this.startDateTime = new TaskDateTime(startTimeText);
-        this.endDateTime = new TaskDateTime(endTimeText);
+        this(description, new TaskDateTime(startTimeText), new TaskDateTime(endTimeText));
     }
 
     /**
@@ -32,9 +30,7 @@ public class Event extends Task {
      * @param endDateTime End date and time of the event.
      */
     public Event(String description, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        super(description);
-        this.startDateTime = new TaskDateTime(startDateTime);
-        this.endDateTime = new TaskDateTime(endDateTime);
+        this(description, new TaskDateTime(startDateTime), new TaskDateTime(endDateTime));
     }
 
     /**
@@ -46,6 +42,7 @@ public class Event extends Task {
      */
     public Event(String description, TaskDateTime startDateTime, TaskDateTime endDateTime) {
         super(description);
+        validateOrder(startDateTime, endDateTime);
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
     }
@@ -66,6 +63,44 @@ public class Event extends Task {
      */
     public TaskDateTime getEndDateTime() {
         return endDateTime;
+    }
+
+    /**
+     * Replaces this event's start date and time without allowing an invalid duration.
+     * If the saved end is legacy free-form text, ordering is deferred until both endpoints are parseable.
+     *
+     * @param startTimeText New start date and time text accepted by Larry.
+     * @throws IllegalArgumentException If the new start is not before a parseable end.
+     */
+    public void updateStartDateTime(String startTimeText) {
+        TaskDateTime updatedStartDateTime = new TaskDateTime(startTimeText);
+        validateOrder(updatedStartDateTime, endDateTime);
+        this.startDateTime = updatedStartDateTime;
+    }
+
+    /**
+     * Replaces this event's end date and time without allowing an invalid duration.
+     * If the saved start is legacy free-form text, ordering is deferred until both endpoints are parseable.
+     *
+     * @param endTimeText New end date and time text accepted by Larry.
+     * @throws IllegalArgumentException If the new end is not after a parseable start.
+     */
+    public void updateEndDateTime(String endTimeText) {
+        TaskDateTime updatedEndDateTime = new TaskDateTime(endTimeText);
+        validateOrder(startDateTime, updatedEndDateTime);
+        this.endDateTime = updatedEndDateTime;
+    }
+
+    /**
+     * Rejects events whose parseable endpoints do not form a positive duration.
+     */
+    private static void validateOrder(TaskDateTime startDateTime, TaskDateTime endDateTime) {
+        Optional<LocalDateTime> startValue = startDateTime.getValue();
+        Optional<LocalDateTime> endValue = endDateTime.getValue();
+        if (startValue.isPresent() && endValue.isPresent()
+                && !endValue.get().isAfter(startValue.get())) {
+            throw new IllegalArgumentException("event end must be after its start");
+        }
     }
 
     @Override

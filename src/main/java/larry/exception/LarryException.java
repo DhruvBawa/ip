@@ -12,4 +12,13 @@ public class LarryException extends Exception {
     public LarryException() {
         super(ERROR_MESSAGE);
     }
+
+    /**
+     * Creates a Larry-specific exception with a precise user-facing message.
+     *
+     * @param message Error message to show the user.
+     */
+    public LarryException(String message) {
+        super(message);
+    }
 }

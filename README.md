@@ -37,6 +37,32 @@ java -jar build/libs/larry.jar
 Larry reads and writes `data/larry.txt` relative to the directory where this
 command is run. Enter `bye` to exit the application.
 
+## Command reference
+
+Commands are lowercase and case-sensitive. Task numbers are one-based.
+
+| Command | Purpose |
+| --- | --- |
+| `todo DESCRIPTION` | Add a todo. |
+| `deadline DESCRIPTION /by DATE_TIME` | Add a deadline. |
+| `event DESCRIPTION /from DATE_TIME /to DATE_TIME` | Add an event whose end is after its start. |
+| `list` | Show all tasks. |
+| `find KEYWORD` | Find tasks by description. |
+| `on DATE` | Show dated tasks occurring on a date. |
+| `mark INDEX` | Mark a task as done. |
+| `unmark INDEX` | Mark a task as not done. |
+| `edit INDEX /description DESCRIPTION` | Change any task's description. |
+| `edit INDEX /by DATE_TIME` | Change a deadline's due date and time. |
+| `edit INDEX /from DATE_TIME` | Change an event's start date and time. |
+| `edit INDEX /to DATE_TIME` | Change an event's end date and time. |
+| `delete INDEX` | Delete a task. |
+| `bye` | Exit Larry. |
+
+Date-time values accept a time such as `0930` or `9:30`, optionally paired
+with a day-month date such as `6-9`, `6/9/2026`, or `6-9-2026`. See the
+[user guide](docs/README.md#editing-one-task-field) for edit examples and
+validation details.
+
 ## Setting up in Intellij
 
 Prerequisites: JDK 25, update Intellij to the most recent version.

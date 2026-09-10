@@ -38,6 +38,19 @@ public class Task {
     }
 
     /**
+     * Replaces this task's description.
+     *
+     * @param description New nonblank description.
+     * @throws IllegalArgumentException If the description is blank.
+     */
+    public void updateDescription(String description) {
+        if (description.isBlank()) {
+            throw new IllegalArgumentException("Task description cannot be blank");
+        }
+        this.description = description;
+    }
+
+    /**
      * Checks whether the task is completed.
      *
      * @return True when the task is completed.

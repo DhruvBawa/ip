@@ -1,5 +1,6 @@
 package larry.task;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -13,6 +14,16 @@ import org.junit.jupiter.api.Test;
  * Tests date matching for events.
  */
 class EventTest {
+    @Test
+    void constructor_endNotAfterStart_exceptionThrown() {
+        LocalDateTime startDateTime = LocalDateTime.of(2026, 9, 6, 10, 0);
+
+        assertThrows(IllegalArgumentException.class, () ->
+                new Event("meeting", startDateTime, startDateTime));
+        assertThrows(IllegalArgumentException.class, () ->
+                new Event("meeting", startDateTime, startDateTime.minusMinutes(1)));
+    }
+
     @Test
     void occursOn_multiDayEvent_startMiddleAndEndDatesTrue() {
         Event event = new Event("conference",
@@ -63,5 +74,60 @@ class EventTest {
                 LocalDateTime.of(2026, 9, 6, 10, 0));
 
         assertThrows(NullPointerException.class, () -> event.occursOn(null));
+    }
+
+    @Test
+    void updateEndpoints_validValues_onlyRequestedEndpointChanged() {
+        Event event = new Event("meeting",
+                LocalDateTime.of(2026, 9, 6, 9, 0),
+                LocalDateTime.of(2026, 9, 6, 10, 0));
+
+        event.updateStartDateTime("6-9-2026 0830");
+        assertEquals(LocalDateTime.of(2026, 9, 6, 8, 30),
+                event.getStartDateTime().getValue().orElseThrow());
+        assertEquals(LocalDateTime.of(2026, 9, 6, 10, 0),
+                event.getEndDateTime().getValue().orElseThrow());
+
+        event.updateEndDateTime("6-9-2026 1100");
+        assertEquals(LocalDateTime.of(2026, 9, 6, 8, 30),
+                event.getStartDateTime().getValue().orElseThrow());
+        assertEquals(LocalDateTime.of(2026, 9, 6, 11, 0),
+                event.getEndDateTime().getValue().orElseThrow());
+    }
+
+    @Test
+    void updateEndpoints_invalidOrder_eventUnchanged() {
+        LocalDateTime originalStart = LocalDateTime.of(2026, 9, 6, 9, 0);
+        LocalDateTime originalEnd = LocalDateTime.of(2026, 9, 6, 10, 0);
+        Event event = new Event("meeting", originalStart, originalEnd);
+
+        assertThrows(IllegalArgumentException.class, () ->
+                event.updateStartDateTime("6-9-2026 1000"));
+        assertEquals(originalStart, event.getStartDateTime().getValue().orElseThrow());
+        assertEquals(originalEnd, event.getEndDateTime().getValue().orElseThrow());
+
+        assertThrows(IllegalArgumentException.class, () ->
+                event.updateEndDateTime("6-9-2026 0859"));
+        assertEquals(originalStart, event.getStartDateTime().getValue().orElseThrow());
+        assertEquals(originalEnd, event.getEndDateTime().getValue().orElseThrow());
+    }
+
+    @Test
+    void updateEndpoints_legacyValues_gradualRepairAllowedAndThenOrderingEnforced() {
+        Event legacyEndEvent = new Event("meeting",
+                new TaskDateTime(LocalDateTime.of(2026, 9, 6, 9, 0)),
+                TaskDateTime.fromStorageString("later that morning"));
+        legacyEndEvent.updateStartDateTime("6-9-2026 0930");
+        legacyEndEvent.updateEndDateTime("6-9-2026 1000");
+        assertEquals(LocalDateTime.of(2026, 9, 6, 10, 0),
+                legacyEndEvent.getEndDateTime().getValue().orElseThrow());
+
+        Event legacyStartEvent = new Event("meeting",
+                TaskDateTime.fromStorageString("early that morning"),
+                new TaskDateTime(LocalDateTime.of(2026, 9, 6, 10, 0)));
+        legacyStartEvent.updateEndDateTime("6-9-2026 1030");
+        assertThrows(IllegalArgumentException.class, () ->
+                legacyStartEvent.updateStartDateTime("6-9-2026 1030"));
+        assertTrue(legacyStartEvent.getStartDateTime().getValue().isEmpty());
     }
 }
