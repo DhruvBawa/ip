@@ -133,6 +133,11 @@ public class Ui implements AutoCloseable {
      * @param tasks Tasks to display.
      */
     public void showTasks(TaskList tasks) {
+        if (tasks.size() == 0) {
+            output.accept(INIT_SPACE + "EVIL LARRY's task vault is empty. "
+                    + "Enjoy your freedom while it lasts.");
+            return;
+        }
         output.accept(INIT_SPACE + "Here are the tasks EVIL LARRY says are in your list:");
         for (int i = 0; i < tasks.size(); i++) {
             output.accept("     " + (i + 1) + "." + tasks.get(i));
@@ -145,7 +150,11 @@ public class Ui implements AutoCloseable {
      * @param matchingTasks Tasks to display.
      */
     public void showMatchingTasks(List<Task> matchingTasks) {
-        output.accept(INIT_SPACE + "Here are the matching tasks in your list:");
+        if (matchingTasks.isEmpty()) {
+            output.accept(INIT_SPACE + "EVIL LARRY found nothing. Try a less pathetic keyword.");
+            return;
+        }
+        output.accept(INIT_SPACE + "EVIL LARRY uncovered these matching tasks:");
         for (int i = 0; i < matchingTasks.size(); i++) {
             output.accept("     " + (i + 1) + "." + matchingTasks.get(i));
         }
@@ -158,6 +167,12 @@ public class Ui implements AutoCloseable {
      * @param tasks Tasks to search and display.
      */
     public void showTasksOnDate(LocalDate date, TaskList tasks) {
+        boolean hasTasksOnDate = tasks.stream().anyMatch(task -> task.occursOn(date));
+        if (!hasTasksOnDate) {
+            output.accept(INIT_SPACE + "EVIL LARRY found no tasks on "
+                    + TaskDateTime.formatDate(date) + ". Your reprieve is temporary.");
+            return;
+        }
         output.accept(INIT_SPACE + "EVIL LARRY says these tasks occur on "
                 + TaskDateTime.formatDate(date) + ":");
         for (int i = 0; i < tasks.size(); i++) {
@@ -227,7 +242,7 @@ public class Ui implements AutoCloseable {
      * @param message Warning message to display.
      */
     public void showWarning(String message) {
-        errorOutput.accept(message);
+        errorOutput.accept("WARNING: EVIL LARRY rejected corrupted task data. " + message);
     }
 
     /**
@@ -236,8 +251,8 @@ public class Ui implements AutoCloseable {
      * @param errorMessage Cause of the loading failure.
      */
     public void showLoadingError(String errorMessage) {
-        errorOutput.accept("WARNING: EVIL LARRY could not read the task data file. "
-                + "Starting with an empty task list. " + errorMessage);
+        errorOutput.accept("WARNING: EVIL LARRY could not seize the task data file. "
+                + "He will begin with an empty vault. Details: " + errorMessage);
     }
 
     /**
@@ -246,8 +261,8 @@ public class Ui implements AutoCloseable {
      * @param errorMessage Cause of the saving failure.
      */
     public void showSavingError(String errorMessage) {
-        errorOutput.accept("WARNING: EVIL LARRY could not save the task data file. "
-                + "The latest change is available only in this session. " + errorMessage);
+        errorOutput.accept("WARNING: EVIL LARRY could not preserve the latest task change. "
+                + "It survives only for this session. Details: " + errorMessage);
     }
 
     /**

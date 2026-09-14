@@ -39,7 +39,7 @@ public abstract class Command {
      */
     protected void validateTaskIndex(TaskList tasks, int taskIndex) throws LarryException {
         if (taskIndex < 0 || taskIndex >= tasks.size()) {
-            throw new LarryException();
+            throw new LarryException("EVIL LARRY cannot find that task number in his vault.");
         }
     }
 

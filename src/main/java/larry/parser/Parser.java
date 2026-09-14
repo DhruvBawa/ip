@@ -26,6 +26,24 @@ public class Parser {
     private static final String DEADLINE_SEPARATOR = " /by ";
     private static final String EVENT_START_SEPARATOR = " /from ";
     private static final String EVENT_END_SEPARATOR = " /to ";
+    private static final String TODO_FORMAT_ERROR = "EVIL LARRY cannot bind a nameless task. "
+            + "Use: todo DESCRIPTION.";
+    private static final String DEADLINE_FORMAT_ERROR = "EVIL LARRY demands proper tribute. "
+            + "Use: deadline DESCRIPTION /by DATE TIME.";
+    private static final String DEADLINE_DATE_ERROR = "EVIL LARRY rejects that deadline date. "
+            + "Try: 06-09-2026 1800.";
+    private static final String EVENT_FORMAT_ERROR = "EVIL LARRY demands a complete scheme. "
+            + "Use: event DESCRIPTION /from DATE TIME /to DATE TIME.";
+    private static final String EVENT_DATE_ERROR = "EVIL LARRY rejects that event date. "
+            + "Try: 06-09-2026 1400.";
+    private static final String EVENT_ORDER_ERROR = "EVIL LARRY refuses to bend time. "
+            + "An event must end after it starts.";
+    private static final String DATE_QUERY_FORMAT_ERROR = "EVIL LARRY needs a date to inspect. "
+            + "Use: on DATE.";
+    private static final String DATE_QUERY_DATE_ERROR = "EVIL LARRY cannot rule that date. "
+            + "Try: on 06-09-2026.";
+    private static final String FIND_FORMAT_ERROR = "EVIL LARRY needs a keyword before he can hunt. "
+            + "Use: find KEYWORD.";
 
     /**
      * Prevents construction of a utility class.
@@ -62,7 +80,7 @@ public class Parser {
             return new DateQueryCommand(parseDate(command, "on"));
         }
         if (isCommand(command, "find")) {
-            return new FindCommand(requireArgument(command, "find"));
+            return new FindCommand(requireArgument(command, "find", FIND_FORMAT_ERROR));
         }
         if (isCommand(command, "mark")) {
             return new MarkCommand(parseTaskIndex(command, "mark"));
@@ -85,7 +103,7 @@ public class Parser {
      */
     private static Task parseTask(String command) throws LarryException {
         if (isCommand(command, "todo")) {
-            return new Todo(requireArgument(command, "todo"));
+            return new Todo(requireArgument(command, "todo", TODO_FORMAT_ERROR));
         }
 
         if (isCommand(command, "deadline")) {
@@ -107,22 +125,22 @@ public class Parser {
      * @throws LarryException If a required field or the due date is invalid.
      */
     private static Deadline parseDeadline(String command) throws LarryException {
-        String arguments = requireArgument(command, "deadline");
+        String arguments = requireArgument(command, "deadline", DEADLINE_FORMAT_ERROR);
         int byPosition = arguments.indexOf(DEADLINE_SEPARATOR);
         int dueDatePosition = byPosition + DEADLINE_SEPARATOR.length();
         if (byPosition <= 0 || dueDatePosition >= arguments.length()) {
-            throw new LarryException();
+            throw new LarryException(DEADLINE_FORMAT_ERROR);
         }
 
         String description = arguments.substring(0, byPosition).trim();
         String dueDate = arguments.substring(dueDatePosition).trim();
         if (description.isEmpty() || dueDate.isEmpty()) {
-            throw new LarryException();
+            throw new LarryException(DEADLINE_FORMAT_ERROR);
         }
         try {
             return new Deadline(description, dueDate);
         } catch (DateTimeParseException e) {
-            throw new LarryException();
+            throw new LarryException(DEADLINE_DATE_ERROR);
         }
     }
 
@@ -134,26 +152,28 @@ public class Parser {
      * @throws LarryException If a required field or either date and time is invalid.
      */
     private static Event parseEvent(String command) throws LarryException {
-        String arguments = requireArgument(command, "event");
+        String arguments = requireArgument(command, "event", EVENT_FORMAT_ERROR);
         int fromPosition = arguments.indexOf(EVENT_START_SEPARATOR);
         int startTimePosition = fromPosition + EVENT_START_SEPARATOR.length();
         int toPosition = arguments.indexOf(EVENT_END_SEPARATOR, startTimePosition);
         int endTimePosition = toPosition + EVENT_END_SEPARATOR.length();
         if (fromPosition <= 0 || toPosition <= startTimePosition
                 || endTimePosition >= arguments.length()) {
-            throw new LarryException();
+            throw new LarryException(EVENT_FORMAT_ERROR);
         }
 
         String description = arguments.substring(0, fromPosition).trim();
         String startTime = arguments.substring(startTimePosition, toPosition).trim();
         String endTime = arguments.substring(endTimePosition).trim();
         if (description.isEmpty() || startTime.isEmpty() || endTime.isEmpty()) {
-            throw new LarryException();
+            throw new LarryException(EVENT_FORMAT_ERROR);
         }
         try {
             return new Event(description, startTime, endTime);
         } catch (DateTimeParseException e) {
-            throw new LarryException();
+            throw new LarryException(EVENT_DATE_ERROR);
+        } catch (IllegalArgumentException e) {
+            throw new LarryException(EVENT_ORDER_ERROR);
         }
     }
 
@@ -166,11 +186,11 @@ public class Parser {
      * @throws LarryException If the date is absent or invalid.
      */
     private static LocalDate parseDate(String command, String keyword) throws LarryException {
-        String dateText = requireArgument(command, keyword);
+        String dateText = requireArgument(command, keyword, DATE_QUERY_FORMAT_ERROR);
         try {
             return TaskDateTime.parseDate(dateText);
         } catch (DateTimeParseException e) {
-            throw new LarryException();
+            throw new LarryException(DATE_QUERY_DATE_ERROR);
         }
     }
 
@@ -183,15 +203,16 @@ public class Parser {
      * @throws LarryException If the task number is absent, non-numeric, zero, or negative.
      */
     private static int parseTaskIndex(String command, String keyword) throws LarryException {
-        String indexText = requireArgument(command, keyword);
+        String indexError = "EVIL LARRY demands a positive task number after " + keyword + ".";
+        String indexText = requireArgument(command, keyword, indexError);
         try {
             int taskIndex = Integer.parseInt(indexText) - 1;
             if (taskIndex < 0) {
-                throw new LarryException();
+                throw new LarryException(indexError);
             }
             return taskIndex;
         } catch (NumberFormatException e) {
-            throw new LarryException();
+            throw new LarryException(indexError);
         }
     }
 
@@ -200,14 +221,16 @@ public class Parser {
      *
      * @param command Full user command.
      * @param keyword Command keyword preceding the argument.
+     * @param errorMessage Message to report when the argument is absent.
      * @return Trimmed argument text.
      * @throws LarryException If the argument is empty.
      */
-    private static String requireArgument(String command, String keyword) throws LarryException {
+    private static String requireArgument(String command, String keyword, String errorMessage)
+            throws LarryException {
         assert isCommand(command, keyword) : "Command must start with the expected keyword";
         String argument = command.substring(keyword.length()).trim();
         if (argument.isEmpty()) {
-            throw new LarryException();
+            throw new LarryException(errorMessage);
         }
         return argument;
     }

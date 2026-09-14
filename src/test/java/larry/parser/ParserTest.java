@@ -1,5 +1,6 @@
 package larry.parser;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -111,5 +112,28 @@ class ParserTest {
     @Test
     void parseCommand_nullInput_nullPointerExceptionThrown() {
         assertThrows(NullPointerException.class, () -> Parser.parseCommand(null));
+    }
+
+    @Test
+    void parseCommand_invalidInputs_personalitySpecificMessagesReturned() {
+        assertErrorMessage("todo",
+                "ERROR: EVIL LARRY cannot bind a nameless task. Use: todo DESCRIPTION.");
+        assertErrorMessage("deadline task /by impossible",
+                "ERROR: EVIL LARRY rejects that deadline date. Try: 06-09-2026 1800.");
+        assertErrorMessage("event meeting /from Mon /to Tue",
+                "ERROR: EVIL LARRY rejects that event date. Try: 06-09-2026 1400.");
+        assertErrorMessage("event meeting /from 06-09-2026 1500 /to 06-09-2026 1400",
+                "ERROR: EVIL LARRY refuses to bend time. An event must end after it starts.");
+        assertErrorMessage("on tomorrow",
+                "ERROR: EVIL LARRY cannot rule that date. Try: on 06-09-2026.");
+        assertErrorMessage("find",
+                "ERROR: EVIL LARRY needs a keyword before he can hunt. Use: find KEYWORD.");
+        assertErrorMessage("mark zero",
+                "ERROR: EVIL LARRY demands a positive task number after mark.");
+    }
+
+    private static void assertErrorMessage(String command, String expectedMessage) {
+        LarryException exception = assertThrows(LarryException.class, () -> Parser.parseCommand(command));
+        assertEquals(expectedMessage, exception.getMessage());
     }
 }

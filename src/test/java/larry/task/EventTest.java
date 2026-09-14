@@ -14,6 +14,16 @@ import org.junit.jupiter.api.Test;
  */
 class EventTest {
     @Test
+    void constructor_endNotAfterStart_exceptionThrown() {
+        LocalDateTime startTime = LocalDateTime.of(2026, 9, 6, 10, 0);
+
+        assertThrows(IllegalArgumentException.class, () ->
+                new Event("backwards", startTime, startTime.minusHours(1)));
+        assertThrows(IllegalArgumentException.class, () ->
+                new Event("instant", startTime, startTime));
+    }
+
+    @Test
     void occursOn_multiDayEvent_startMiddleAndEndDatesTrue() {
         Event event = new Event("conference",
                 LocalDateTime.of(2026, 9, 5, 9, 0),

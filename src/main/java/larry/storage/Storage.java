@@ -72,7 +72,7 @@ public class Storage {
                     try {
                         tasks.add(deserialize(line));
                     } catch (IllegalArgumentException e) {
-                        loadWarnings.add("WARNING: Skipping invalid task data at line "
+                        loadWarnings.add("Rejected line "
                                 + lineNumber + ": " + e.getMessage());
                     }
                 }

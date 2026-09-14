@@ -111,19 +111,19 @@ What do you want to do?
        [T][X] read book
     __________________________________________________________
     __________________________________________________________
-     Here are the matching tasks in your list:
+     EVIL LARRY uncovered these matching tasks:
      1.[T][X] read book
      2.[D][ ] return book (by: 6 Jun 2026, 6:00 PM)
     __________________________________________________________
     __________________________________________________________
-     Here are the matching tasks in your list:
+     EVIL LARRY uncovered these matching tasks:
      1.[E][ ] project meeting (from: 6 Aug 2026, 2:00 PM to: 6 Aug 2026, 4:00 PM)
     __________________________________________________________
     __________________________________________________________
-     Here are the matching tasks in your list:
+     EVIL LARRY found nothing. Try a less pathetic keyword.
     __________________________________________________________
     __________________________________________________________
-     ERROR!! Fix your inputs Before EVIL LARRY comes after you!
+     ERROR: EVIL LARRY needs a keyword before he can hunt. Use: find KEYWORD.
     __________________________________________________________
     __________________________________________________________
      EVIL LARRY has decided to let you go
@@ -234,7 +234,7 @@ What do you want to do?
      3.[E][ ] conference (from: 5 Sep 2026, 9:00 AM to: 7 Sep 2026, 5:00 PM)
     __________________________________________________________
     __________________________________________________________
-     EVIL LARRY says these tasks occur on 9 Sep 2026:
+     EVIL LARRY found no tasks on 9 Sep 2026. Your reprieve is temporary.
     __________________________________________________________
     __________________________________________________________
      EVIL LARRY has decided to let you go
@@ -419,7 +419,7 @@ What do you want to do?
      EVIL LARRY says you have 0 tasks in the list.
     __________________________________________________________
     __________________________________________________________
-     Here are the tasks EVIL LARRY says are in your list:
+     EVIL LARRY's task vault is empty. Enjoy your freedom while it lasts.
     __________________________________________________________
     __________________________________________________________
      EVIL LARRY has decided to let you go
@@ -504,7 +504,7 @@ What do you want to do?
 
 ### Aim
 
-Verify that unknown commands and malformed todo, deadline, and event inputs show Larry's error response and do not add tasks.
+Verify that unknown commands and malformed todo, deadline, and event inputs show actionable responses in Larry's voice and do not add tasks.
 
 ### Inputs
 
@@ -521,6 +521,7 @@ event meeting /from Mon
 event meeting /to Tue
 event meeting from Mon /to Tue
 event invalid end /from 06-08-2026 1400 /to tomorrow
+event backwards /from 12-09-2026 1000 /to 12-09-2026 0900
 on
 on 2026-09-06
 list
@@ -541,43 +542,46 @@ What do you want to do?
      EVIL LARRY says you have 1 task in the list.
     __________________________________________________________
     __________________________________________________________
-     ERROR!! Fix your inputs Before EVIL LARRY comes after you!
+     ERROR: EVIL LARRY rejects that command. Use todo, deadline, event, list, mark, unmark, delete, find, on, or bye.
     __________________________________________________________
     __________________________________________________________
-     ERROR!! Fix your inputs Before EVIL LARRY comes after you!
+     ERROR: EVIL LARRY cannot bind a nameless task. Use: todo DESCRIPTION.
     __________________________________________________________
     __________________________________________________________
-     ERROR!! Fix your inputs Before EVIL LARRY comes after you!
+     ERROR: EVIL LARRY demands proper tribute. Use: deadline DESCRIPTION /by DATE TIME.
     __________________________________________________________
     __________________________________________________________
-     ERROR!! Fix your inputs Before EVIL LARRY comes after you!
+     ERROR: EVIL LARRY demands proper tribute. Use: deadline DESCRIPTION /by DATE TIME.
     __________________________________________________________
     __________________________________________________________
-     ERROR!! Fix your inputs Before EVIL LARRY comes after you!
+     ERROR: EVIL LARRY demands proper tribute. Use: deadline DESCRIPTION /by DATE TIME.
     __________________________________________________________
     __________________________________________________________
-     ERROR!! Fix your inputs Before EVIL LARRY comes after you!
+     ERROR: EVIL LARRY rejects that deadline date. Try: 06-09-2026 1800.
     __________________________________________________________
     __________________________________________________________
-     ERROR!! Fix your inputs Before EVIL LARRY comes after you!
+     ERROR: EVIL LARRY demands a complete scheme. Use: event DESCRIPTION /from DATE TIME /to DATE TIME.
     __________________________________________________________
     __________________________________________________________
-     ERROR!! Fix your inputs Before EVIL LARRY comes after you!
+     ERROR: EVIL LARRY demands a complete scheme. Use: event DESCRIPTION /from DATE TIME /to DATE TIME.
     __________________________________________________________
     __________________________________________________________
-     ERROR!! Fix your inputs Before EVIL LARRY comes after you!
+     ERROR: EVIL LARRY demands a complete scheme. Use: event DESCRIPTION /from DATE TIME /to DATE TIME.
     __________________________________________________________
     __________________________________________________________
-     ERROR!! Fix your inputs Before EVIL LARRY comes after you!
+     ERROR: EVIL LARRY demands a complete scheme. Use: event DESCRIPTION /from DATE TIME /to DATE TIME.
     __________________________________________________________
     __________________________________________________________
-     ERROR!! Fix your inputs Before EVIL LARRY comes after you!
+     ERROR: EVIL LARRY rejects that event date. Try: 06-09-2026 1400.
     __________________________________________________________
     __________________________________________________________
-     ERROR!! Fix your inputs Before EVIL LARRY comes after you!
+     ERROR: EVIL LARRY refuses to bend time. An event must end after it starts.
     __________________________________________________________
     __________________________________________________________
-     ERROR!! Fix your inputs Before EVIL LARRY comes after you!
+     ERROR: EVIL LARRY needs a date to inspect. Use: on DATE.
+    __________________________________________________________
+    __________________________________________________________
+     ERROR: EVIL LARRY cannot rule that date. Try: on 06-09-2026.
     __________________________________________________________
     __________________________________________________________
      Here are the tasks EVIL LARRY says are in your list:
@@ -593,7 +597,7 @@ What do you want to do?
 
 ### Aim
 
-Verify that missing, non-numeric, zero, negative, and out-of-range task numbers for mark, unmark, and delete show Larry's error response and preserve the list.
+Verify that missing, non-numeric, zero, negative, and out-of-range task numbers show actionable responses in Larry's voice and preserve the list.
 
 ### Inputs
 
@@ -625,28 +629,28 @@ What do you want to do?
      EVIL LARRY says you have 1 task in the list.
     __________________________________________________________
     __________________________________________________________
-     ERROR!! Fix your inputs Before EVIL LARRY comes after you!
+     ERROR: EVIL LARRY demands a positive task number after mark.
     __________________________________________________________
     __________________________________________________________
-     ERROR!! Fix your inputs Before EVIL LARRY comes after you!
+     ERROR: EVIL LARRY demands a positive task number after mark.
     __________________________________________________________
     __________________________________________________________
-     ERROR!! Fix your inputs Before EVIL LARRY comes after you!
+     ERROR: EVIL LARRY demands a positive task number after mark.
     __________________________________________________________
     __________________________________________________________
-     ERROR!! Fix your inputs Before EVIL LARRY comes after you!
+     ERROR: EVIL LARRY cannot find that task number in his vault.
     __________________________________________________________
     __________________________________________________________
-     ERROR!! Fix your inputs Before EVIL LARRY comes after you!
+     ERROR: EVIL LARRY cannot find that task number in his vault.
     __________________________________________________________
     __________________________________________________________
-     ERROR!! Fix your inputs Before EVIL LARRY comes after you!
+     ERROR: EVIL LARRY demands a positive task number after delete.
     __________________________________________________________
     __________________________________________________________
-     ERROR!! Fix your inputs Before EVIL LARRY comes after you!
+     ERROR: EVIL LARRY demands a positive task number after delete.
     __________________________________________________________
     __________________________________________________________
-     ERROR!! Fix your inputs Before EVIL LARRY comes after you!
+     ERROR: EVIL LARRY cannot find that task number in his vault.
     __________________________________________________________
     __________________________________________________________
      Here are the tasks EVIL LARRY says are in your list:

@@ -39,7 +39,7 @@ class LarryTest {
 
         String response = larry.getResponse("not a command");
 
-        assertTrue(response.contains("ERROR!! Fix your inputs Before EVIL LARRY comes after you!"));
+        assertTrue(response.contains("ERROR: EVIL LARRY rejects that command."));
         assertEquals("Error", larry.getCommandType());
     }
 
