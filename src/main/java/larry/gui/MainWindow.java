@@ -26,7 +26,6 @@ public class MainWindow extends AnchorPane {
     @FXML
     private Button sendButton;
 
-    private final Image userImage = AvatarFactory.createUserAvatar();
     private final Image larryImage = loadLarryImage();
     private Larry larry;
 
@@ -70,7 +69,7 @@ public class MainWindow extends AnchorPane {
         String commandType = larry.getCommandType();
 
         dialogContainer.getChildren().addAll(
-                DialogBox.getUserDialog(input, userImage),
+                DialogBox.getUserDialog(input),
                 DialogBox.getLarryDialog(response, larryImage, commandType));
         userInput.clear();
     }

@@ -1,35 +1,38 @@
-.label {
-    -fx-background-color: linear-gradient(to bottom right, #00ffbf, #00ddff);
-    -fx-border-color: #d55e00 #009e73 #cc79a7 #0072b2;
-    -fx-border-width: 2px;
-    -fx-background-radius: 1em 1em 0 1em;
-    -fx-border-radius: 1em 1em 0 1em;
+.message-label {
+    -fx-background-color: #2563eb;
+    -fx-background-radius: 14px 14px 4px 14px;
+    -fx-font: 16px "System";
+    -fx-text-fill: white;
 }
 
-.reply-label {
-    -fx-background-radius: 1em 1em 1em 0;
-    -fx-border-radius: 1em 1em 1em 0;
+.larry-label {
+    -fx-background-color: rgba(255, 255, 255, 0.94);
+    -fx-background-radius: 4px 14px 14px 14px;
+    -fx-border-color: #dfe3e8;
+    -fx-border-radius: 4px 14px 14px 14px;
+    -fx-border-width: 1px;
+    -fx-text-fill: #20242a;
 }
 
-.add-label {
-    -fx-background-color: yellow;
-}
-
-.marked-label {
-    -fx-background-color: palegreen;
+.success-label,
+.status-label {
+    -fx-background-color: rgba(240, 253, 244, 0.96);
+    -fx-border-color: #86d49b;
 }
 
 .delete-label {
-    -fx-background-color: lightpink;
+    -fx-background-color: rgba(255, 247, 237, 0.96);
+    -fx-border-color: #fdba74;
 }
 
 .error-label {
-    -fx-background-color: mistyrose;
+    -fx-background-color: rgba(255, 241, 242, 0.97);
+    -fx-border-color: #e11d48;
+    -fx-border-width: 1px 1px 1px 4px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #9f1239;
 }
 
 #displayPicture {
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.5, 5, 5);
-    -fx-scale-x: 1;
-    -fx-scale-y: 1;
-    -fx-rotate: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.18), 4, 0, 0, 1);
 }
