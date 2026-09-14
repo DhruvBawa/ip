@@ -96,11 +96,11 @@ class StorageTest {
         assertEquals("valid done todo", loadedTasks.get(1).getDescription());
         assertTrue(loadedTasks.get(1).isDone());
         assertEquals(List.of(
-                "WARNING: Skipping invalid task data at line 3: unknown task type 'X'",
-                "WARNING: Skipping invalid task data at line 4: status must be 0 or 1",
-                "WARNING: Skipping invalid task data at line 5: "
+                "Rejected line 3: unknown task type 'X'",
+                "Rejected line 4: status must be 0 or 1",
+                "Rejected line 5: "
                         + "wrong number of fields for task type D",
-                "WARNING: Skipping invalid task data at line 6: task details cannot be blank"
+                "Rejected line 6: task details cannot be blank"
         ), warnings);
         assertThrows(UnsupportedOperationException.class, () ->
                 warnings.add("unexpected warning"));

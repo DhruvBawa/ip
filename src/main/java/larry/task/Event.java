@@ -17,11 +17,13 @@ public class Event extends Task {
      * @param description Description of the event.
      * @param startTimeText Start date and time text accepted by Larry.
      * @param endTimeText End date and time text accepted by Larry.
+     * @throws IllegalArgumentException If the event does not end after it starts.
      */
     public Event(String description, String startTimeText, String endTimeText) {
         super(description);
         this.startDateTime = new TaskDateTime(startTimeText);
         this.endDateTime = new TaskDateTime(endTimeText);
+        validateChronologicalOrder();
     }
 
     /**
@@ -30,11 +32,13 @@ public class Event extends Task {
      * @param description Description of the event.
      * @param startDateTime Start date and time of the event.
      * @param endDateTime End date and time of the event.
+     * @throws IllegalArgumentException If the event does not end after it starts.
      */
     public Event(String description, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         super(description);
         this.startDateTime = new TaskDateTime(startDateTime);
         this.endDateTime = new TaskDateTime(endDateTime);
+        validateChronologicalOrder();
     }
 
     /**
@@ -43,11 +47,13 @@ public class Event extends Task {
      * @param description Description of the event.
      * @param startDateTime Start date and time of the event.
      * @param endDateTime End date and time of the event.
+     * @throws IllegalArgumentException If the event does not end after it starts.
      */
     public Event(String description, TaskDateTime startDateTime, TaskDateTime endDateTime) {
         super(description);
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
+        validateChronologicalOrder();
     }
 
     /**
@@ -66,6 +72,18 @@ public class Event extends Task {
      */
     public TaskDateTime getEndDateTime() {
         return endDateTime;
+    }
+
+    /**
+     * Rejects parsed event times that do not form a forward-moving interval.
+     */
+    private void validateChronologicalOrder() {
+        Optional<LocalDateTime> startValue = startDateTime.getValue();
+        Optional<LocalDateTime> endValue = endDateTime.getValue();
+        if (startValue.isPresent() && endValue.isPresent()
+                && !endValue.get().isAfter(startValue.get())) {
+            throw new IllegalArgumentException("event must end after it starts");
+        }
     }
 
     @Override

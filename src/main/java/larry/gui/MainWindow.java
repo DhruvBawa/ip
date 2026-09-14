@@ -2,6 +2,10 @@ package larry.gui;
 
 import java.util.Objects;
 
+import javafx.animation.PauseTransition;
+import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.NumberBinding;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -9,13 +13,23 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.util.Duration;
 import larry.Larry;
 
 /**
  * Controls Larry's main graphical interface.
  */
 public class MainWindow extends AnchorPane {
+    private static final double BASE_WINDOW_HEIGHT = 620.0;
+    private static final double BASE_WINDOW_WIDTH = 460.0;
+    private static final double MAX_INTERFACE_SCALE = 1.8;
+    private static final double MIN_INTERFACE_SCALE = 1.0;
+    private static final Duration EXIT_DELAY = Duration.seconds(5.0);
+    private static final String EXIT_COMMAND_TYPE = "ExitCommand";
     private static final String LARRY_IMAGE_PATH = "/images/EvilLarry.jpg";
+    private static final String LARRY_FONT_PATH = "/fonts/Unutterable-Regular.ttf";
+    private static final double LARRY_FONT_SIZE = 20.0;
 
     @FXML
     private ScrollPane scrollPane;
@@ -27,7 +41,22 @@ public class MainWindow extends AnchorPane {
     private Button sendButton;
 
     private final Image larryImage = loadLarryImage();
+    private final NumberBinding interfaceScale = createInterfaceScale();
+    private final PauseTransition exitDelay = new PauseTransition(EXIT_DELAY);
     private Larry larry;
+
+    /**
+     * Creates a bounded scale that follows the smaller window dimension.
+     *
+     * @return Responsive scale for conversation elements.
+     */
+    private NumberBinding createInterfaceScale() {
+        NumberBinding availableScale = Bindings.min(
+                widthProperty().divide(BASE_WINDOW_WIDTH),
+                heightProperty().divide(BASE_WINDOW_HEIGHT));
+        return Bindings.max(MIN_INTERFACE_SCALE,
+                Bindings.min(MAX_INTERFACE_SCALE, availableScale));
+    }
 
     /**
      * Loads Larry's avatar from the resources packaged with the application.
@@ -46,7 +75,21 @@ public class MainWindow extends AnchorPane {
      */
     @FXML
     public void initialize() {
+        loadLarryFont();
         scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
+    }
+
+    /**
+     * Registers Larry's display font before any dialog boxes are created.
+     */
+    private static void loadLarryFont() {
+        String fontUrl = Objects.requireNonNull(
+                MainWindow.class.getResource(LARRY_FONT_PATH),
+                "Missing Larry font: " + LARRY_FONT_PATH).toExternalForm();
+        Font loadedFont = Font.loadFont(fontUrl, LARRY_FONT_SIZE);
+        if (loadedFont == null) {
+            throw new IllegalStateException("Unable to load Larry's display font.");
+        }
     }
 
     /**
@@ -69,8 +112,23 @@ public class MainWindow extends AnchorPane {
         String commandType = larry.getCommandType();
 
         dialogContainer.getChildren().addAll(
-                DialogBox.getUserDialog(input),
-                DialogBox.getLarryDialog(response, larryImage, commandType));
+                DialogBox.getUserDialog(input, interfaceScale),
+                DialogBox.getLarryDialog(response, larryImage, commandType, interfaceScale));
         userInput.clear();
+
+        if (commandType.equals(EXIT_COMMAND_TYPE)) {
+            scheduleExit();
+        }
+    }
+
+    /**
+     * Keeps Larry's farewell visible briefly before closing the application window.
+     */
+    private void scheduleExit() {
+        userInput.setDisable(true);
+        sendButton.setDisable(true);
+
+        exitDelay.setOnFinished(event -> Platform.exit());
+        exitDelay.playFromStart();
     }
 }

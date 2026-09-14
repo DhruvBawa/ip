@@ -25,7 +25,7 @@ public class Main extends Application {
             MainWindow mainWindow = fxmlLoader.getController();
             mainWindow.setLarry(larry);
 
-            stage.setTitle("Larry");
+            stage.setTitle("EVIL LARRY");
             stage.setMinHeight(220.0);
             stage.setMinWidth(340.0);
             stage.setResizable(true);
