@@ -1,8 +1,10 @@
 package larry;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
@@ -46,9 +48,12 @@ class LarryTest {
     @Test
     void getResponse_taskAdded_newLarryInstanceLoadsSavedTask() {
         Path dataFile = temporaryDirectory.resolve("tasks.txt");
+        assertFalse(Files.exists(dataFile));
+
         Larry originalLarry = new Larry(dataFile);
         originalLarry.getResponse("todo persist this task");
 
+        assertTrue(Files.isRegularFile(dataFile));
         Larry reloadedLarry = new Larry(dataFile);
         String response = reloadedLarry.getResponse("list");
 

@@ -1,7 +1,7 @@
 .message-label {
     -fx-background-color: #475569;
     -fx-background-radius: 14px 14px 4px 14px;
-    -fx-font: 16px "System";
+    -fx-font: 22px "System";
     -fx-text-fill: white;
 }
 
@@ -18,8 +18,8 @@
     -fx-background-color: rgba(127, 29, 29, 0.95);
     -fx-background-radius: 8px;
     -fx-font-family: "Unutterable";
-    -fx-font-size: 20px;
-    -fx-padding: 2px 8px;
+    -fx-font-size: 30px;
+    -fx-padding: 3px 10px;
     -fx-text-fill: white;
 }
 

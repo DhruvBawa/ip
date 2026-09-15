@@ -11,7 +11,7 @@
     -fx-border-color: #666a73;
     -fx-border-radius: 10px;
     -fx-border-width: 1px;
-    -fx-font: 16px "System";
+    -fx-font: 20px "System";
     -fx-padding: 0 14px;
     -fx-prompt-text-fill: #b8bbc2;
     -fx-text-fill: #f3f4f6;
@@ -26,7 +26,7 @@
     -fx-background-color: #3a3d43;
     -fx-background-radius: 10px;
     -fx-cursor: hand;
-    -fx-font: bold 15px "System";
+    -fx-font: bold 18px "System";
     -fx-text-fill: white;
 }
 

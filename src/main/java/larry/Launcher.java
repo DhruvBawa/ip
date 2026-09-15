@@ -8,7 +8,7 @@ import javafx.application.Application;
 public class Launcher {
 
     /**
-     * Starts the JavaFX runtime and opens the HelloWorld application.
+     * Starts the JavaFX runtime and opens the EVIL LARRY application.
      *
      * @param args Command-line arguments passed to JavaFX.
      */

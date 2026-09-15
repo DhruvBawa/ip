@@ -2,6 +2,7 @@ package larry.parser;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.Objects;
 
 import larry.command.AddCommand;
 import larry.command.Command;
@@ -70,28 +71,29 @@ public class Parser {
      * @throws LarryException If the command or its arguments are invalid.
      */
     public static Command parseCommand(String command) throws LarryException {
-        if (command.equals("bye")) {
+        String normalizedCommand = Objects.requireNonNull(command, "command").trim();
+        if (normalizedCommand.equals("bye")) {
             return new ExitCommand();
         }
-        if (command.equals("list")) {
+        if (normalizedCommand.equals("list")) {
             return new ListCommand();
         }
-        if (isCommand(command, "on")) {
-            return new DateQueryCommand(parseDate(command, "on"));
+        if (isCommand(normalizedCommand, "on")) {
+            return new DateQueryCommand(parseDate(normalizedCommand, "on"));
         }
-        if (isCommand(command, "find")) {
-            return new FindCommand(requireArgument(command, "find", FIND_FORMAT_ERROR));
+        if (isCommand(normalizedCommand, "find")) {
+            return new FindCommand(requireArgument(normalizedCommand, "find", FIND_FORMAT_ERROR));
         }
-        if (isCommand(command, "mark")) {
-            return new MarkCommand(parseTaskIndex(command, "mark"));
+        if (isCommand(normalizedCommand, "mark")) {
+            return new MarkCommand(parseTaskIndex(normalizedCommand, "mark"));
         }
-        if (isCommand(command, "unmark")) {
-            return new UnmarkCommand(parseTaskIndex(command, "unmark"));
+        if (isCommand(normalizedCommand, "unmark")) {
+            return new UnmarkCommand(parseTaskIndex(normalizedCommand, "unmark"));
         }
-        if (isCommand(command, "delete")) {
-            return new DeleteCommand(parseTaskIndex(command, "delete"));
+        if (isCommand(normalizedCommand, "delete")) {
+            return new DeleteCommand(parseTaskIndex(normalizedCommand, "delete"));
         }
-        return new AddCommand(parseTask(command));
+        return new AddCommand(parseTask(normalizedCommand));
     }
 
     /**

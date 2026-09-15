@@ -24,13 +24,13 @@ import javafx.scene.text.FontWeight;
  * Represents a user command or a response from Larry.
  */
 public class DialogBox extends HBox {
-    private static final double AVATAR_SIZE = 56.0;
-    private static final double DIALOG_FONT_SIZE = 16.0;
-    private static final double DIALOG_HORIZONTAL_PADDING = 12.0;
-    private static final double DIALOG_VERTICAL_PADDING = 10.0;
-    private static final double SPEAKER_FONT_SIZE = 20.0;
+    private static final double AVATAR_SIZE = 80.0;
+    private static final double DIALOG_FONT_SIZE = 22.0;
+    private static final double DIALOG_HORIZONTAL_PADDING = 16.0;
+    private static final double DIALOG_VERTICAL_PADDING = 12.0;
+    private static final double SPEAKER_FONT_SIZE = 30.0;
     private static final double USER_MESSAGE_WIDTH_RATIO = 0.76;
-    private static final double LARRY_MESSAGE_HORIZONTAL_SPACE = 84.0;
+    private static final double LARRY_MESSAGE_HORIZONTAL_SPACE = 116.0;
 
     @FXML
     private Label dialog;

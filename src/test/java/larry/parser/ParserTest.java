@@ -24,6 +24,7 @@ class ParserTest {
     void parseCommand_exitAndListCommands_correctCommandReturned() throws LarryException {
         assertInstanceOf(ExitCommand.class, Parser.parseCommand("bye"));
         assertInstanceOf(ListCommand.class, Parser.parseCommand("list"));
+        assertInstanceOf(ListCommand.class, Parser.parseCommand("  list  "));
     }
 
     @Test

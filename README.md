@@ -1,11 +1,12 @@
-# Larry
+# EVIL LARRY
 
-Larry is a chatbot developed as a greenfield Java project. Given below are instructions on how to use it.
+EVIL LARRY is a task-management chatbot developed as a greenfield Java
+project. Given below are instructions on how to use it.
 
 ## Building and running with Gradle
 
-This project uses the Gradle Wrapper, so you do not need to install Gradle globally.
-From the project root, use:
+This project uses the Gradle Wrapper, so you do not need to install Gradle
+globally. From the project root, use:
 
 ```bash
 ./gradlew build
@@ -13,8 +14,8 @@ From the project root, use:
 ```
 
 The first command compiles the project and runs its automated tests. The second
-command starts Larry. Gradle downloads the project's declared Gradle version on
-the first run and reuses it afterwards.
+command starts EVIL LARRY. Gradle downloads the project's declared Gradle
+version on the first run and reuses it afterwards.
 
 ## Creating and running a fat JAR
 
@@ -24,9 +25,9 @@ Create a fresh fat JAR with the Shadow plugin from the project root:
 ./gradlew clean shadowJar
 ```
 
-The generated file is `build/libs/larry.jar`. It contains Larry's compiled
-classes and all runtime dependencies, and its manifest identifies `larry.Larry`
-as the entry point.
+The generated file is `build/libs/larry.jar`. It contains EVIL LARRY's compiled
+classes and all runtime dependencies, and its manifest identifies
+`larry.Launcher` as the entry point.
 
 Run the JAR using Java 25:
 
@@ -34,8 +35,10 @@ Run the JAR using Java 25:
 java -jar build/libs/larry.jar
 ```
 
-Larry reads and writes `data/larry.txt` relative to the directory where this
-command is run. Enter `bye` to exit the application.
+EVIL LARRY reads and writes `data/larry.txt` relative to the directory where
+this command is run. If the file or its parent directory does not exist, EVIL
+LARRY creates them when the first task is saved. Enter `bye` to exit the
+application.
 
 ## Setting up in Intellij
 
@@ -60,9 +63,13 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
 
 **Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
 
-## Font credit
+## Credits and acknowledgements
 
-Larry's display typeface is
-[Unutterable](https://www.fontspace.com/unutterable-font-f85237), designed by
-[GGBotNet](https://ggbot.net). It is distributed under the SIL Open Font
-License, Version 1.1; a copy is included with the bundled font.
+- This project is based on the NUS CS2103T individual project starter template.
+- The JavaFX GUI structure, including `MainWindow`, `DialogBox`, and the FXML
+  views, is adapted from the
+  [SE-EDU JavaFX tutorial](https://se-education.org/guides/tutorials/javaFx.html).
+- EVIL LARRY's display typeface is
+  [Unutterable](https://www.fontspace.com/unutterable-font-f85237), designed by
+  [GGBotNet](https://ggbot.net). It is distributed under the SIL Open Font
+  License, Version 1.1; a copy is included with the bundled font.

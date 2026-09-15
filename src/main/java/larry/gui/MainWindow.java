@@ -23,7 +23,6 @@ import larry.Larry;
 public class MainWindow extends AnchorPane {
     private static final double BASE_WINDOW_HEIGHT = 620.0;
     private static final double BASE_WINDOW_WIDTH = 460.0;
-    private static final double MAX_INTERFACE_SCALE = 1.8;
     private static final double MIN_INTERFACE_SCALE = 1.0;
     private static final Duration EXIT_DELAY = Duration.seconds(5.0);
     private static final String EXIT_COMMAND_TYPE = "ExitCommand";
@@ -46,7 +45,9 @@ public class MainWindow extends AnchorPane {
     private Larry larry;
 
     /**
-     * Creates a bounded scale that follows the smaller window dimension.
+     * Creates a scale that grows with the smaller window dimension.
+     * The minimum keeps text readable in compact windows, while the lack of an
+     * upper bound lets the conversation make full use of larger windows.
      *
      * @return Responsive scale for conversation elements.
      */
@@ -54,8 +55,7 @@ public class MainWindow extends AnchorPane {
         NumberBinding availableScale = Bindings.min(
                 widthProperty().divide(BASE_WINDOW_WIDTH),
                 heightProperty().divide(BASE_WINDOW_HEIGHT));
-        return Bindings.max(MIN_INTERFACE_SCALE,
-                Bindings.min(MAX_INTERFACE_SCALE, availableScale));
+        return Bindings.max(MIN_INTERFACE_SCALE, availableScale);
     }
 
     /**

@@ -10,7 +10,9 @@ Output starts after line: `             █████████████�
 
 ### Aim
 
-Verify that todo, deadline, and event commands add correctly typed tasks, preserve their details in the list, and update the task count.
+Verify that todo, deadline, and event commands add correctly typed tasks,
+preserve their details in the list, update the task count, and tolerate
+leading whitespace in a command.
 
 ### Inputs
 
@@ -18,7 +20,7 @@ Verify that todo, deadline, and event commands add correctly typed tasks, preser
 todo read book
 deadline return book /by 06-06-2026 1800
 event project meeting /from 1400 06/08/2026 /to 06/08/2026 16:00
-list
+  list
 bye
 ```
 
