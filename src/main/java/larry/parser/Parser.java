@@ -8,6 +8,8 @@ import larry.command.AddCommand;
 import larry.command.Command;
 import larry.command.DateQueryCommand;
 import larry.command.DeleteCommand;
+import larry.command.EditCommand;
+import larry.command.EditField;
 import larry.command.ExitCommand;
 import larry.command.FindCommand;
 import larry.command.ListCommand;
@@ -93,7 +95,82 @@ public class Parser {
         if (isCommand(normalizedCommand, "delete")) {
             return new DeleteCommand(parseTaskIndex(normalizedCommand, "delete"));
         }
+        if (isCommand(normalizedCommand, "edit")) {
+            return parseEditCommand(normalizedCommand);
+        }
         return new AddCommand(parseTask(normalizedCommand));
+    }
+
+    /**
+     * Parses a command that changes exactly one supported task field.
+     *
+     * @param command Full edit command.
+     * @return Edit command represented by the input.
+     * @throws LarryException If the index, field marker, or replacement value is invalid.
+     */
+    private static EditCommand parseEditCommand(String command) throws LarryException {
+        String arguments = command.substring("edit".length()).trim();
+        if (arguments.isEmpty()) {
+            throw invalidEditSyntax();
+        }
+
+        String[] parts = arguments.split("\\s+", 3);
+        int taskIndex = parseEditTaskIndex(parts[0]);
+        if (parts.length < 2) {
+            throw invalidEditSyntax();
+        }
+
+        EditField field = EditField.fromMarker(parts[1])
+                .orElseThrow(() -> new LarryException(
+                        "Edit field must be /description, /by, /from, or /to."));
+        if (parts.length < 3 || parts[2].isBlank()) {
+            throw new LarryException("The edit replacement value cannot be blank.");
+        }
+        String replacementValue = parts[2].trim();
+        validateEditDateTime(field, replacementValue);
+        return new EditCommand(taskIndex, field, replacementValue);
+    }
+
+    /**
+     * Validates replacement date-time text while leaving descriptions unrestricted.
+     */
+    private static void validateEditDateTime(EditField field, String replacementValue)
+            throws LarryException {
+        if (field == EditField.DESCRIPTION) {
+            return;
+        }
+
+        try {
+            new TaskDateTime(replacementValue);
+        } catch (DateTimeParseException e) {
+            throw new LarryException("The value for " + field.getMarker()
+                    + " is not a valid date and time.");
+        }
+    }
+
+    /**
+     * Parses the positive one-based task number in an edit command.
+     */
+    private static int parseEditTaskIndex(String indexText) throws LarryException {
+        try {
+            int taskNumber = Integer.parseInt(indexText);
+            if (taskNumber <= 0) {
+                throw new LarryException(
+                        "The edit task index must be a positive whole number.");
+            }
+            return taskNumber - 1;
+        } catch (NumberFormatException e) {
+            throw new LarryException(
+                    "The edit task index must be a positive whole number.");
+        }
+    }
+
+    /**
+     * Creates the error used when an edit command lacks its required structure.
+     */
+    private static LarryException invalidEditSyntax() {
+        return new LarryException("Use edit INDEX /description DESCRIPTION, "
+                + "/by DATE_TIME, /from DATE_TIME, or /to DATE_TIME.");
     }
 
     /**

@@ -59,6 +59,178 @@ What do you want to do?
     __________________________________________________________
 ```
 
+## Test Case: Edit every supported task field
+
+### Aim
+
+Verify before/after replies for all editable fields and preserve task types, positions, statuses, and unchanged details.
+
+### Inputs
+
+```text
+todo draft notes
+deadline submit report /by 10-09-2026 0900
+event team meeting /from 11-09-2026 0900 /to 11-09-2026 1000
+mark 2
+mark 3
+  edit 1 /description revised /by notes
+edit 2 /by 10-09-2026 1200
+edit 3 /from 11-09-2026 0830
+edit 3 /to 11-09-2026 1030
+list
+bye
+```
+
+### Expected output
+
+```text
+         ██████████████████████████████████████████████
+
+I'm EVIL LARRY.
+What do you want to do?
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY has added this task for you:
+       [T][ ] draft notes
+     EVIL LARRY says you have 1 task in the list.
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY has added this task for you:
+       [D][ ] submit report (by: 10 Sep 2026, 9:00 AM)
+     EVIL LARRY says you have 2 tasks in the list.
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY has added this task for you:
+       [E][ ] team meeting (from: 11 Sep 2026, 9:00 AM to: 11 Sep 2026, 10:00 AM)
+     EVIL LARRY says you have 3 tasks in the list.
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY has marked this task as done:
+       [D][X] submit report (by: 10 Sep 2026, 9:00 AM)
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY has marked this task as done:
+       [E][X] team meeting (from: 11 Sep 2026, 9:00 AM to: 11 Sep 2026, 10:00 AM)
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY updated task 1:
+     Before: [T][ ] draft notes
+     After:  [T][ ] revised /by notes
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY updated task 2:
+     Before: [D][X] submit report (by: 10 Sep 2026, 9:00 AM)
+     After:  [D][X] submit report (by: 10 Sep 2026, 12:00 PM)
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY updated task 3:
+     Before: [E][X] team meeting (from: 11 Sep 2026, 9:00 AM to: 11 Sep 2026, 10:00 AM)
+     After:  [E][X] team meeting (from: 11 Sep 2026, 8:30 AM to: 11 Sep 2026, 10:00 AM)
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY updated task 3:
+     Before: [E][X] team meeting (from: 11 Sep 2026, 8:30 AM to: 11 Sep 2026, 10:00 AM)
+     After:  [E][X] team meeting (from: 11 Sep 2026, 8:30 AM to: 11 Sep 2026, 10:30 AM)
+    __________________________________________________________
+    __________________________________________________________
+     Here are the tasks EVIL LARRY says are in your list:
+     1.[T][ ] revised /by notes
+     2.[D][X] submit report (by: 10 Sep 2026, 12:00 PM)
+     3.[E][X] team meeting (from: 11 Sep 2026, 8:30 AM to: 11 Sep 2026, 10:30 AM)
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY has decided to let you go
+     FOR NOW...
+    __________________________________________________________
+```
+
+## Test Case: Reject invalid edits and event ordering
+
+### Aim
+
+Verify representative edit syntax, index, field, value, type, date-time, and ordering errors leave all tasks unchanged.
+
+### Inputs
+
+```text
+todo original todo
+deadline report /by 10-09-2026 0900
+event meeting /from 11-09-2026 0900 /to 11-09-2026 1000
+edit
+edit zero /description fixed
+edit 4 /description fixed
+edit 1 /description
+edit 1 /where fixed
+edit 1 /by 10-09-2026 1200
+edit 2 /by tomorrow
+edit 3 /from 11-09-2026 1100
+event backwards /from 12-09-2026 1000 /to 12-09-2026 0900
+list
+bye
+```
+
+### Expected output
+
+```text
+         ██████████████████████████████████████████████
+
+I'm EVIL LARRY.
+What do you want to do?
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY has added this task for you:
+       [T][ ] original todo
+     EVIL LARRY says you have 1 task in the list.
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY has added this task for you:
+       [D][ ] report (by: 10 Sep 2026, 9:00 AM)
+     EVIL LARRY says you have 2 tasks in the list.
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY has added this task for you:
+       [E][ ] meeting (from: 11 Sep 2026, 9:00 AM to: 11 Sep 2026, 10:00 AM)
+     EVIL LARRY says you have 3 tasks in the list.
+    __________________________________________________________
+    __________________________________________________________
+     ERROR: Use edit INDEX /description DESCRIPTION, /by DATE_TIME, /from DATE_TIME, or /to DATE_TIME.
+    __________________________________________________________
+    __________________________________________________________
+     ERROR: The edit task index must be a positive whole number.
+    __________________________________________________________
+    __________________________________________________________
+     ERROR: There is no task at index 4 to edit.
+    __________________________________________________________
+    __________________________________________________________
+     ERROR: The edit replacement value cannot be blank.
+    __________________________________________________________
+    __________________________________________________________
+     ERROR: Edit field must be /description, /by, /from, or /to.
+    __________________________________________________________
+    __________________________________________________________
+     ERROR: You cannot edit /by on a todo task.
+    __________________________________________________________
+    __________________________________________________________
+     ERROR: The value for /by is not a valid date and time.
+    __________________________________________________________
+    __________________________________________________________
+     ERROR: An event must end after it starts.
+    __________________________________________________________
+    __________________________________________________________
+     ERROR: EVIL LARRY refuses to bend time. An event must end after it starts.
+    __________________________________________________________
+    __________________________________________________________
+     Here are the tasks EVIL LARRY says are in your list:
+     1.[T][ ] original todo
+     2.[D][ ] report (by: 10 Sep 2026, 9:00 AM)
+     3.[E][ ] meeting (from: 11 Sep 2026, 9:00 AM to: 11 Sep 2026, 10:00 AM)
+    __________________________________________________________
+    __________________________________________________________
+     EVIL LARRY has decided to let you go
+     FOR NOW...
+    __________________________________________________________
+```
+
 ## Test Case: Find tasks by description keyword
 
 ### Aim
@@ -544,7 +716,7 @@ What do you want to do?
      EVIL LARRY says you have 1 task in the list.
     __________________________________________________________
     __________________________________________________________
-     ERROR: EVIL LARRY rejects that command. Use todo, deadline, event, list, mark, unmark, delete, find, on, or bye.
+     ERROR: EVIL LARRY rejects that command. Use todo, deadline, event, list, mark, unmark, delete, edit, find, on, or bye.
     __________________________________________________________
     __________________________________________________________
      ERROR: EVIL LARRY cannot bind a nameless task. Use: todo DESCRIPTION.

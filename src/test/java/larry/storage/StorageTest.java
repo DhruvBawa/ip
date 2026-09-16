@@ -107,6 +107,43 @@ class StorageTest {
     }
 
     @Test
+    void loadTasks_eventsWithInvalidOrdering_recordsSkippedWithLineWarnings() throws IOException {
+        Path dataFile = temporaryDirectory.resolve("larry.txt");
+        Files.writeString(dataFile, """
+                E | 0 | reversed | 2026-08-06T16:00:00 | 2026-08-06T14:00:00
+                T | 0 | valid task
+                E | 1 | equal | 2026-08-06T14:00:00 | 2026-08-06T14:00:00
+                """, StandardCharsets.UTF_8);
+        Storage storage = new Storage(dataFile);
+
+        TaskList loadedTasks = storage.loadTasks();
+
+        assertEquals(1, loadedTasks.size());
+        assertEquals("valid task", loadedTasks.get(0).getDescription());
+        assertEquals(List.of(
+                "Rejected line 1: event end must be after its start",
+                "Rejected line 3: event end must be after its start"
+        ), storage.getLoadWarnings());
+    }
+
+    @Test
+    void loadTasks_legacyEventDates_recordsRemainCompatible() throws IOException {
+        Path dataFile = temporaryDirectory.resolve("larry.txt");
+        Files.writeString(dataFile, """
+                E | 0 | legacy dates | Monday morning | Monday afternoon
+                E | 1 | legacy start | Friday evening | 2026-08-06T16:00:00
+                E | 0 | legacy end | 2026-08-06T14:00:00 | after lunch
+                """, StandardCharsets.UTF_8);
+        Storage storage = new Storage(dataFile);
+
+        TaskList loadedTasks = storage.loadTasks();
+
+        assertEquals(3, loadedTasks.size());
+        assertTrue(loadedTasks.get(1).isDone());
+        assertEquals(List.of(), storage.getLoadWarnings());
+    }
+
+    @Test
     void loadTasks_invalidUtf8_saveBlockedUntilSuccessfulReload() throws IOException {
         Path dataFile = temporaryDirectory.resolve("larry.txt");
         byte[] invalidUtf8 = {'T', ' ', '|', ' ', '0', ' ', '|', ' ', (byte) 0xC3, 0x28};

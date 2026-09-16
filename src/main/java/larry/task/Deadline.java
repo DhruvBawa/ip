@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
  * Represents a task that must be completed by a particular date or time.
  */
 public class Deadline extends Task {
-    private final TaskDateTime dueDateTime;
+    private TaskDateTime dueDateTime;
 
     /**
      * Creates a deadline task from date and time text.
@@ -49,6 +49,16 @@ public class Deadline extends Task {
      */
     public TaskDateTime getDueDateTime() {
         return dueDateTime;
+    }
+
+    /**
+     * Replaces this deadline's due date and time after parsing the new value.
+     *
+     * @param dueDateText New date and time text accepted by Larry.
+     */
+    public void updateDueDateTime(String dueDateText) {
+        TaskDateTime updatedDateTime = new TaskDateTime(dueDateText);
+        this.dueDateTime = updatedDateTime;
     }
 
     @Override

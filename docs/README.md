@@ -128,6 +128,56 @@ Format: `delete TASK_NUMBER`
 
 Example: `delete 2`
 
+### Editing one task field: `edit`
+
+The `edit` command changes exactly one detail of an existing task:
+
+```text
+edit INDEX /description DESCRIPTION
+edit INDEX /by DATE_TIME
+edit INDEX /from DATE_TIME
+edit INDEX /to DATE_TIME
+```
+
+The available field depends on the task type:
+
+| Field | Allowed task type | Example |
+| --- | --- | --- |
+| `/description` | Todo, deadline, or event | `edit 1 /description read chapters 2 and 3` |
+| `/by` | Deadline only | `edit 2 /by 12-9-2026 1800` |
+| `/from` | Event only | `edit 3 /from 14-9-2026 1330` |
+| `/to` | Event only | `edit 3 /to 14-9-2026 1600` |
+
+Larry reports both versions after a successful edit:
+
+```text
+EVIL LARRY updated task 3:
+Before: [E][ ] project meeting (from: 14 Sep 2026, 2:00 PM to: 14 Sep 2026, 4:00 PM)
+After:  [E][ ] project meeting (from: 14 Sep 2026, 1:30 PM to: 14 Sep 2026, 4:00 PM)
+```
+
+The task keeps its type, completion status, list position, and every field not
+named in the command. Supplying the current value again is also a successful
+edit. Everything after `/description` is description text, so a description
+may itself contain text such as `/by` or `/to`.
+
+Larry rejects an edit when:
+
+- the index is missing, non-numeric, zero, negative, or outside the task list;
+- the field marker is missing or is not one of the four markers above;
+- the replacement is blank;
+- the field does not apply to that task type;
+- a date-time value is invalid; or
+- an event edit would make its end equal to or earlier than its start.
+
+Validation happens before a field is changed, so a rejected edit leaves the
+task unchanged. Successful edits are saved immediately.
+
+Older saved events can contain free-form date text that Larry cannot parse.
+Such an endpoint can be replaced normally. Larry allows the two endpoints to
+be repaired one at a time and enforces their order as soon as both are
+parseable.
+
 ### Exiting the application: `bye`
 
 Closes EVIL LARRY after a short farewell.
@@ -147,4 +197,5 @@ Format: `bye`
 | Mark a task complete | `mark TASK_NUMBER` |
 | Mark a task incomplete | `unmark TASK_NUMBER` |
 | Delete a task | `delete TASK_NUMBER` |
+| Edit one field | `edit INDEX /description TEXT`, `/by DATE_TIME`, `/from DATE_TIME`, or `/to DATE_TIME` |
 | Exit | `bye` |

@@ -59,4 +59,66 @@ class LarryTest {
 
         assertTrue(response.contains("1.[T][ ] persist this task"));
     }
+
+    @Test
+    void getResponse_editTask_changeSavedAndLoadedWithStatusPreserved() {
+        Path dataFile = temporaryDirectory.resolve("tasks.txt");
+        Larry originalLarry = new Larry(dataFile);
+        originalLarry.getResponse("deadline submit draft /by 10-9-2026 0900");
+        originalLarry.getResponse("mark 1");
+
+        String editResponse = originalLarry.getResponse("edit 1 /by 10-9-2026 1200");
+        Larry reloadedLarry = new Larry(dataFile);
+        String listResponse = reloadedLarry.getResponse("list");
+
+        assertTrue(editResponse.contains("EVIL LARRY updated task 1:"));
+        assertTrue(editResponse.contains(
+                "Before: [D][X] submit draft (by: 10 Sep 2026, 9:00 AM)"));
+        assertTrue(editResponse.contains(
+                "After:  [D][X] submit draft (by: 10 Sep 2026, 12:00 PM)"));
+        assertTrue(listResponse.contains(
+                "1.[D][X] submit draft (by: 10 Sep 2026, 12:00 PM)"));
+        assertEquals("EditCommand", originalLarry.getCommandType());
+    }
+
+    @Test
+    void getResponse_editDescriptionWithFieldLikeText_entireReplacementUsed() {
+        Larry larry = new Larry(temporaryDirectory.resolve("tasks.txt"));
+        larry.getResponse("todo original");
+
+        String response = larry.getResponse(
+                "edit 1 /description discuss /by and /from markers");
+
+        assertTrue(response.contains(
+                "After:  [T][ ] discuss /by and /from markers"));
+    }
+
+    @Test
+    void getResponse_noOpEdit_successfulResponseReturned() {
+        Larry larry = new Larry(temporaryDirectory.resolve("tasks.txt"));
+        larry.getResponse("todo unchanged");
+
+        String response = larry.getResponse("edit 1 /description unchanged");
+
+        assertTrue(response.contains("Before: [T][ ] unchanged"));
+        assertTrue(response.contains("After:  [T][ ] unchanged"));
+        assertEquals("EditCommand", larry.getCommandType());
+    }
+
+    @Test
+    void getResponse_incompatibleAndInvalidEdits_taskUnchanged() {
+        Larry larry = new Larry(temporaryDirectory.resolve("tasks.txt"));
+        larry.getResponse("event meeting /from 10-9-2026 0900 /to 10-9-2026 1000");
+
+        assertEquals("ERROR: You cannot edit /by on an event task.",
+                larry.getResponse("edit 1 /by 10-9-2026 1200"));
+        assertEquals("ERROR: The value for /from is not a valid date and time.",
+                larry.getResponse("edit 1 /from tomorrow"));
+        assertEquals("ERROR: An event must end after it starts.",
+                larry.getResponse("edit 1 /to 10-9-2026 0900"));
+
+        String listResponse = larry.getResponse("list");
+        assertTrue(listResponse.contains(
+                "1.[E][ ] meeting (from: 10 Sep 2026, 9:00 AM to: 10 Sep 2026, 10:00 AM)"));
+    }
 }

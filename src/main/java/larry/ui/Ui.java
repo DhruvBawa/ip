@@ -228,6 +228,19 @@ public class Ui implements AutoCloseable {
     }
 
     /**
+     * Displays the task before and after a successful single-field edit.
+     *
+     * @param taskNumber One-based number of the edited task.
+     * @param previousTaskText Task display text before the edit.
+     * @param task Edited task.
+     */
+    public void showTaskEdited(int taskNumber, String previousTaskText, Task task) {
+        output.accept(INIT_SPACE + "EVIL LARRY updated task " + taskNumber + ":");
+        output.accept(INIT_SPACE + "Before: " + previousTaskText);
+        output.accept(INIT_SPACE + "After:  " + task);
+    }
+
+    /**
      * Displays an invalid-command error.
      *
      * @param message Error message to display.

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import larry.command.AddCommand;
 import larry.command.DateQueryCommand;
 import larry.command.DeleteCommand;
+import larry.command.EditCommand;
 import larry.command.ExitCommand;
 import larry.command.FindCommand;
 import larry.command.ListCommand;
@@ -45,6 +46,18 @@ class ParserTest {
     }
 
     @Test
+    void parseCommand_allSupportedEditFields_editCommandReturned() throws LarryException {
+        assertInstanceOf(EditCommand.class,
+                Parser.parseCommand("  edit 1 /description discuss /by and /to markers  "));
+        assertInstanceOf(EditCommand.class,
+                Parser.parseCommand("edit 2 /by 6-6-2026 1800"));
+        assertInstanceOf(EditCommand.class,
+                Parser.parseCommand("edit 3 /from 6-8-2026 1400"));
+        assertInstanceOf(EditCommand.class,
+                Parser.parseCommand("edit 3 /to 6-8-2026 1600"));
+    }
+
+    @Test
     void parseCommand_validDateQuery_dateQueryCommandReturned() throws LarryException {
         assertInstanceOf(DateQueryCommand.class, Parser.parseCommand("on 6-9-2026"));
     }
@@ -73,6 +86,7 @@ class ParserTest {
         assertThrows(LarryException.class, () -> Parser.parseCommand("mark"));
         assertThrows(LarryException.class, () -> Parser.parseCommand("unmark"));
         assertThrows(LarryException.class, () -> Parser.parseCommand("delete"));
+        assertThrows(LarryException.class, () -> Parser.parseCommand("edit"));
     }
 
     @Test
@@ -82,6 +96,58 @@ class ParserTest {
         assertThrows(LarryException.class, () -> Parser.parseCommand("unmark -1"));
         assertThrows(LarryException.class, () -> Parser.parseCommand("delete 1.5"));
         assertThrows(LarryException.class, () -> Parser.parseCommand("delete 1 extra"));
+    }
+
+    @Test
+    void parseCommand_invalidEditIndex_specificExceptionThrown() {
+        assertEditError("ERROR: The edit task index must be a positive whole number.",
+                "edit zero /description updated");
+        assertEditError("ERROR: The edit task index must be a positive whole number.",
+                "edit 0 /description updated");
+        assertEditError("ERROR: The edit task index must be a positive whole number.",
+                "edit -1 /description updated");
+        assertEditError("ERROR: The edit task index must be a positive whole number.",
+                "edit 1.5 /description updated");
+        assertEditError("ERROR: The edit task index must be a positive whole number.",
+                "edit zero");
+    }
+
+    @Test
+    void parseCommand_malformedEditSyntax_specificExceptionThrown() {
+        assertEditError("ERROR: Use edit INDEX /description DESCRIPTION, /by DATE_TIME, "
+                        + "/from DATE_TIME, or /to DATE_TIME.",
+                "edit");
+        assertEditError("ERROR: Use edit INDEX /description DESCRIPTION, /by DATE_TIME, "
+                        + "/from DATE_TIME, or /to DATE_TIME.",
+                "edit 1");
+    }
+
+    @Test
+    void parseCommand_unsupportedEditField_specificExceptionThrown() {
+        assertEditError("ERROR: Edit field must be /description, /by, /from, or /to.",
+                "edit 1 description updated");
+        assertEditError("ERROR: Edit field must be /description, /by, /from, or /to.",
+                "edit 1 /at 6-6-2026 1800");
+        assertEditError("ERROR: Edit field must be /description, /by, /from, or /to.",
+                "edit 1 /Description updated");
+    }
+
+    @Test
+    void parseCommand_blankEditValue_specificExceptionThrown() {
+        assertEditError("ERROR: The edit replacement value cannot be blank.",
+                "edit 1 /description");
+        assertEditError("ERROR: The edit replacement value cannot be blank.",
+                "edit 1 /by   ");
+    }
+
+    @Test
+    void parseCommand_invalidEditDateTime_specificExceptionThrown() {
+        assertEditError("ERROR: The value for /by is not a valid date and time.",
+                "edit 1 /by tomorrow");
+        assertEditError("ERROR: The value for /from is not a valid date and time.",
+                "edit 1 /from 25:00");
+        assertEditError("ERROR: The value for /to is not a valid date and time.",
+                "edit 1 /to 31-2-2026 1200");
     }
 
     @Test
@@ -136,5 +202,11 @@ class ParserTest {
     private static void assertErrorMessage(String command, String expectedMessage) {
         LarryException exception = assertThrows(LarryException.class, () -> Parser.parseCommand(command));
         assertEquals(expectedMessage, exception.getMessage());
+    }
+    /**
+     * Verifies the precise message returned for an invalid edit command.
+     */
+    private static void assertEditError(String expectedMessage, String command) {
+        assertErrorMessage(command, expectedMessage);
     }
 }

@@ -6,7 +6,7 @@ package larry.exception;
 public class LarryException extends Exception {
     private static final String ERROR_PREFIX = "ERROR: ";
     private static final String UNKNOWN_COMMAND_MESSAGE = "EVIL LARRY rejects that command. "
-            + "Use todo, deadline, event, list, mark, unmark, delete, find, on, or bye.";
+            + "Use todo, deadline, event, list, mark, unmark, delete, edit, find, on, or bye.";
 
     /**
      * Creates a Larry-specific exception with the chatbot's standard error message.
