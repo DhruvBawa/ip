@@ -76,7 +76,15 @@ public class MainWindow extends AnchorPane {
     @FXML
     public void initialize() {
         loadLarryFont();
-        scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
+        sendButton.disableProperty().bind(Bindings.createBooleanBinding(() ->
+                userInput.isDisabled() || userInput.getText().isBlank(),
+                userInput.disabledProperty(), userInput.textProperty()));
+        dialogContainer.heightProperty().addListener((observable, oldHeight, newHeight) ->
+                scrollPane.setVvalue(scrollPane.getVmax()));
+        dialogContainer.getChildren().add(DialogBox.getLarryDialog(
+                "I'm EVIL LARRY. Your tasks belong to me now.\n"
+                        + "Try 'todo read book' to add a task, or 'list' to see your tasks.",
+                larryImage, "Welcome", interfaceScale));
     }
 
     /**
@@ -106,8 +114,11 @@ public class MainWindow extends AnchorPane {
      */
     @FXML
     private void handleUserInput() {
-        assert larry != null : "Larry must be set before handling user input";
         String input = userInput.getText();
+        if (userInput.isDisabled() || input.isBlank()) {
+            return;
+        }
+        assert larry != null : "Larry must be set before handling user input";
         String response = larry.getResponse(input);
         String commandType = larry.getCommandType();
 
@@ -126,7 +137,6 @@ public class MainWindow extends AnchorPane {
      */
     private void scheduleExit() {
         userInput.setDisable(true);
-        sendButton.setDisable(true);
 
         exitDelay.setOnFinished(event -> Platform.exit());
         exitDelay.playFromStart();

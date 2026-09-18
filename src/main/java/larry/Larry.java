@@ -3,6 +3,7 @@ package larry;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import larry.command.Command;
 import larry.exception.LarryException;
@@ -70,7 +71,11 @@ public class Larry {
         }
 
         assert !responseLines.isEmpty() : "Every command must produce a GUI response";
-        return String.join(System.lineSeparator(), responseLines).strip();
+        // Bubble padding provides indentation, including for lines that wrap on screen.
+        return responseLines.stream()
+                .flatMap(String::lines)
+                .map(String::stripLeading)
+                .collect(Collectors.joining(System.lineSeparator())).strip();
     }
 
     /**

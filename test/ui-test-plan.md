@@ -1,5 +1,9 @@
 # UI Test Plan
 
+Graphical layout, startup greeting, and mouse/trackpad scrolling are covered
+separately in [the GUI regression plan](gui-test-plan.md). The console output
+and expected transcripts below are unchanged by GUI formatting fixes.
+
 ## Configuration
 
 Program command: `bash test/run-ui-test.sh`

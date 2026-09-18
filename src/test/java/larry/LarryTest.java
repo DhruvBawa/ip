@@ -18,6 +18,20 @@ class LarryTest {
     private Path temporaryDirectory;
 
     @Test
+    void getResponse_multilineReplies_alignLinesAndPreserveDescriptionSpacing() {
+        Larry larry = new Larry(temporaryDirectory.resolve("tasks.txt"));
+        String added = larry.getResponse("todo read  two chapters");
+        String listed = larry.getResponse("list");
+        String deleted = larry.getResponse("delete 1");
+
+        for (String response : new String[]{added, listed, deleted}) {
+            assertTrue(response.lines().allMatch(line -> line.equals(line.stripLeading())));
+            assertTrue(response.contains("read  two chapters"));
+        }
+        assertTrue(deleted.contains("0 tasks"));
+    }
+
+    @Test
     void getResponse_validTaskCommands_stateAndCommandTypeUpdated() {
         Larry larry = new Larry(temporaryDirectory.resolve("tasks.txt"));
 
