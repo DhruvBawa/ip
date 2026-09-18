@@ -11,6 +11,10 @@ saves every change automatically.
 1. Install Java 25.
 1. Download `larry.jar` from the
    [latest release](https://github.com/DhruvBawa/ip/releases/latest).
+   If you use an Apple Silicon Mac or Linux with ARM64 Java, download
+   `larry-arm64.jar` instead and use that filename in the command below.
+   The standard `larry.jar` targets x64 Java on Windows, Intel Macs, and Linux.
+   Windows ARM64 Java is not supported by the bundled JavaFX version.
 1. Place the JAR in a folder where you want EVIL LARRY to keep its data.
 1. Open a terminal in that folder and run:
 

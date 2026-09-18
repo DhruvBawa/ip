@@ -18,6 +18,13 @@ checkstyle {
     toolVersion = '11.0.0'
 }
 
+configurations {
+    arm64Runtime {
+        // Explicit classifiers below prevent host-platform natives entering this JAR.
+        transitive = false
+    }
+}
+
 dependencies {
     String javaFxVersion = '17.0.7'
     String jUnitVersion = '5.14.4'
@@ -34,6 +41,11 @@ dependencies {
     implementation "org.openjfx:javafx-graphics:${javaFxVersion}:win"
     implementation "org.openjfx:javafx-graphics:${javaFxVersion}:mac"
     implementation "org.openjfx:javafx-graphics:${javaFxVersion}:linux"
+
+    ['base', 'controls', 'fxml', 'graphics'].each { module ->
+        arm64Runtime "org.openjfx:javafx-${module}:${javaFxVersion}:mac-aarch64"
+        arm64Runtime "org.openjfx:javafx-${module}:${javaFxVersion}:linux-aarch64"
+    }
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:${jUnitVersion}"
 
@@ -70,6 +82,17 @@ jar {
 shadowJar {
     // Produce one runnable JAR containing Larry and all runtime dependencies.
     archiveFileName = 'larry.jar'
+    manifest {
+        attributes 'Main-Class': application.mainClass.get()
+    }
+}
+
+tasks.register('shadowJarArm64', com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
+    group = 'build'
+    description = 'Builds a standalone JAR for macOS and Linux running ARM64 Java.'
+    archiveFileName = 'larry-arm64.jar'
+    from sourceSets.main.output
+    configurations = [project.configurations.arm64Runtime]
     manifest {
         attributes 'Main-Class': application.mainClass.get()
     }
