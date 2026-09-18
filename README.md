@@ -40,23 +40,28 @@ this command is run. If the file or its parent directory does not exist, EVIL
 LARRY creates them when the first task is saved. Enter `bye` to exit the
 application.
 
-### macOS and Linux (ARM64 Java)
+### Platform requirements
 
-Build a separate JAR with the ARM64 JavaFX libraries:
+Publish only `build/libs/larry.jar`. The build follows the
+[SE-EDU JavaFX Gradle configuration](https://se-education.org/guides/tutorials/javaFxPart1.html)
+and bundles the Windows, macOS, and Linux JavaFX dependencies.
+
+On macOS (both Intel and Apple Silicon), use the course-required **Zulu
+Java 25 JDK+FX**, following the
+[Mac installation guide](https://se-education.org/guides/tutorials/javaInstallationMac.html).
+After installation, select it in the terminal before building or running:
 
 ```bash
-./gradlew shadowJarArm64
+sdk use java 25.0.3.fx-zulu
+java -version
+java -jar build/libs/larry.jar
 ```
 
-The output is `build/libs/larry-arm64.jar`. On an Apple Silicon Mac or Linux
-ARM64 system with ARM64 Java 25, run `java -jar larry-arm64.jar`.
-The existing `shadowJar` task still produces `larry.jar` for x64 Java on
-Windows, Intel Macs, and Linux. To create both files, run
-`./gradlew shadowJar shadowJarArm64`.
-
-Windows ARM64 Java is not supported: the JavaFX 17.0.7 dependencies do not
-provide Windows ARM64 native libraries. Linux ARM64 also requires a graphical
-desktop and the native system dependencies required by JavaFX.
+The JavaFX-enabled runtime is part of the macOS prerequisites. A generic
+ARM64 OpenJDK installation without JavaFX is not equivalent and can fail to
+load the JAR's Intel Mac native libraries. There is no separate ARM64 JAR.
+Windows and Linux users should use x64 Java 25; native ARM64 support on
+those operating systems is not provided by this build.
 
 ## Command reference
 
